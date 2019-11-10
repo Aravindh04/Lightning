@@ -1,0 +1,112 @@
+<!--**********************************************************************************
+@   Container type		: Markup
+@   Dependecy	 		: Child components
+@   Registered events 	: 3
+@   Init in Use		 	: Yes
+@   Extends/Extensible	: No
+@ 	Number of Attributes: 43
+@ 	Number of handlers	: 4
+@   Description 		: To Support the parent with field mapping with a field container for it
+@ 	Copy rights @		: 
+****************************************************************************************-->
+
+<aura:component controller="ObjectField_MappingClass"
+	description="ObjectField_Mapping">
+
+	<aura:attribute name="parentFields" type="List"
+		description="Map of the fields of the parent objects" />
+
+	<aura:attribute name="masterObject" type="Object" default=""
+		description="The Master object value of the selected Object" />
+
+	<aura:attribute name="traverse" type="String" default=""
+		description="The path selected for the parent to child selection" />
+
+	<aura:attribute name="numFieldType" type="String" default=""
+		description="Data type of the selected field" />
+
+	<aura:attribute name="standardField" type="String" default=""
+		description="Standard field parent selected" />
+
+	<aura:attribute name="firstValue" type="boolean" default="false"
+		description="Is the values is the direct master object value" />
+
+	<aura:attribute name="parentsOnly" type="boolean" default="false"
+		description="To filter only the fields with reference and Lookups" />
+
+	<aura:registerEvent name="otherFieldSelected"
+		type="c:ObjectField_OtherFields_Event"
+		description="Registered event to receive as a parameter" />
+
+	<aura:method name="clearParentLookups"
+		action="{!c.clearParentLookupsHolder}"
+		description="Clear all the fields " />
+
+	<div class="slds-grid ">
+		<div class="slds-col"
+			style="border-right: 2px solid #d8dde6; width: 300px; padding-right: 0px;">
+			<nav class="slds-nav-vertical" aria-label="Sub page">
+				<div class="slds-nav-vertical__section">
+
+					<!--View title with the Parent object name-->
+					<div class="slds-grid slds-grid_align-spread"
+						style="height: 2.5rem;">
+						<div />
+						<div>
+							<h2 id="entity-header"
+								class="slds-nav-vertical__title slds-text-title_caps slds-text-heading--large slds-text-align--center">{!v.parentFields[0].objectName}</h2>
+						</div>
+						<div>
+							<aura:if isTrue="{!v.firstValue}">
+								<lightning:input class="" type="checkbox-button"
+									title="Parents only" label="Parents only" name="input2"
+									checked="{v.parentsOnly}" onchange="{!c.handleCheckBox}" />
+							</aura:if>
+						</div>
+					</div>
+					<aura:if isTrue="{!v.parentFields.length >= 1}">
+
+						<!--Unordered list of fields populated in a container with scroller-->
+						<ul>
+							<ui:scrollerWrapper class="scrollable scroll-frame">
+								<aura:iteration items="{!v.parentFields}" var="listval"
+									indexVar="listvalindex" aura:id="listOfValues">
+									<li class="slds-nav-vertical__item"
+										style="display: flex; justify-content: space-between">
+
+										<!--Show values without lookups/reference--> <aura:if
+											isTrue="{!listval.fieldType == v.numFieldType &amp;&amp; !v.parentsOnly}">
+											<a class="slds-nav-vertical__action"
+												data-index="{!listvalindex}" onclick="{!c.selectThisValue}">
+												{!listval.label} </a>
+										</aura:if> <!--Show values with only lookups/reference--> <aura:if
+											isTrue="{!listval.fieldType == 'REFERENCE' &amp;&amp; v.firstValue}">
+											<a class="slds-nav-vertical__action"
+												data-index="{!listvalindex}" onclick="{!c.selectThisValue}">
+												{!listval.label} </a>
+											<button
+												class="slds-button slds-button--icon slds-box_xx-small slds-text-align_center slds-m-around_xx-small"
+												data-id="{!listvalindex}">
+												<lightning:Icon iconName="standard:search" size="small"
+													alternativeText="Lookup" aura:id="lookupBtn"
+													variant="inverse" />
+											</button>
+										</aura:if>
+									</li>
+								</aura:iteration>
+							</ui:scrollerWrapper>
+						</ul>
+						<aura:set attribute="else">
+
+							<!--When there are no value for the selected Field datatype-->
+							<div class="scrollable scroll-frame slds-align_absolute-center">
+								List has no rows for '{!v.numFieldType}' type</div>
+						</aura:set>
+					</aura:if>
+				</div>
+			</nav>
+		</div>
+		<div class="slds-col" aura:id="lookupNavigationPlaceHolder" />
+	</div>
+
+</aura:component>

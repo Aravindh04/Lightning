@@ -1,0 +1,44 @@
+<aura:component controller="Sharing_Details"
+	extends="c:Generic_Component">
+	<!--use JQuery Data Table css,Js and jQUERY js file in lightning component by using ltng:require component-->
+	<ltng:require
+		styles="{! $Resource.	datatable + '/DataTables-1.10.16/media/css/jquery.dataTables.min.css'}"
+		scripts="{!join(',', 
+                           $Resource.jquery331 , 
+                           $Resource.datatable + '/DataTables-1.10.16/media/js/jquery.dataTables.min.js')
+                           }"
+		afterScriptsLoaded="{!c.scriptsLoaded}" />
+
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+	<aura:attribute name="lstEXP" type="sObject[]" />
+
+	<div class="slds-m-around_medium">
+		<table id="tableId"
+			class="slds-table slds-table_bordered slds-table_cell-buffer"
+			cellspacing="0" width="100%">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Member</th>
+					<th>Expense on</th>
+					<th>Expense Date</th>
+					<th>Category</th>
+					<th>Amount</th>
+				</tr>
+			</thead>
+			<tbody>
+				<aura:iteration items="{!v.lstEXP}" var="ex">
+					<tr>
+						<td>{!ex.Name}</td>
+						<td>{!ex.Member__c}</td>
+						<td>{!ex.Expense_on__c}</td>
+						<td>{!ex.Expense_Date__c}</td>
+						<td>{!ex.Category__c}</td>
+						<td>{!ex.Amount__c}</td>
+					</tr>
+				</aura:iteration>
+			</tbody>
+		</table>
+	</div>
+</aura:component>

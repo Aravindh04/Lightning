@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Name_validation</fullName>
+    <active>true</active>
+    <errorConditionFormula>Person_Name__r.Name  =  Secondary_User__c</errorConditionFormula>
+    <errorMessage>Invalid Name, Please enter a valid name.</errorMessage>
+</ValidationRule>

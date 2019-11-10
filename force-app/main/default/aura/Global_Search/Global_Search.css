@@ -1,0 +1,43 @@
+.THIS .sObjFields {
+	height: 15rem;
+	overflow: auto;
+}
+
+.THIS .editorSection {
+	max-height: -webkit-fill-available; /*583px*/
+	height: -webkit-fill-available;
+	overflow: auto;
+	padding: 0.5rem;
+}
+
+.THIS .layoutSection {
+	
+}
+
+.THIS .field-selection_section {
+	max-height: 65vh;
+	overflow: auto;
+}
+
+.THIS .DTHeader {
+	max-width: 5rem;
+}
+
+.THIS .eConBtn {
+	border-radius: 0rem 0.25rem 0.25rem 0rem;
+	right: 10px;
+}
+
+.THIS .DTdata {
+	max-width: 6rem;
+	white-space: pre-wrap;
+}
+
+.THIS .naming {
+	font-size: 10px;
+	position: absolute;
+}
+
+.THIS table.fieldTable tr:hover td {
+	background-color: #e8f2f8;
+}

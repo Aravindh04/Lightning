@@ -1,0 +1,5 @@
+<aura:component implements="flexipage:availableForAllPageTypes"
+	access="global">
+	<lightning:omniToolkitAPI aura:id="omniToolkit" />
+	<lightning:button label="Accept" onClick="{! c.acceptWork }" />
+</aura:component>

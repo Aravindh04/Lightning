@@ -1,0 +1,49 @@
+<aura:component controller="Sharing_Details"
+	implements="lightning:actionOverride,force:hasRecordId,force:hasSObjectName"
+	access="global">
+	<aura:attribute name="expence" type="Expense__c[]" />
+	<aura:attribute name="Shares" type="Share__c" />
+	<!--Contanins expence transactions for current Month -->
+	<aura:attribute name="expenceMonth" type="Expense__c[]" />
+	<!--Contanins Monthly expence total-->
+	<aura:attribute name="monthlyAmount" type="decimal" />
+	<aura:attribute name="userMas" type="User_Master__c[]" />
+
+
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+	<!--List of boolean values-->
+	<aura:attribute name="showMonthlytran" type="boolean" default="false" />
+
+
+	<article class="slds-card">
+		<div class="slds-card__header slds-grid">
+			<header class="slds-media slds-media--center slds-has-flexi-truncate">
+				<div class="slds-media__body">
+					<h2>
+						<span class="slds-text-heading--small">Expense Details</span>
+					</h2>
+				</div>
+			</header>
+			<div class="slds-no-flex">
+				<lightning:button label="Edit" onclick="{!c.handleEdit}" />
+			</div>
+		</div>
+		<div class="slds-card__body">(expense details go here)</div>
+	</article>
+    
+    
+    Total Transactions : {!v.expence.length}
+    Overall expenses
+    <br />
+    Number of transactions this Month : {!v.expenceMonth.length}
+    <br />
+    Show Current month Trancsaction
+    <lightning:button name="" label="Show Current month Trancsaction"
+		onclick="{!c.showTran}" />
+	<aura:if isTrue="{!v.showMonthlytran}">
+    	Monthly Toatal Amount : {!v.monthlyAmount}
+    </aura:if>
+
+
+</aura:component>

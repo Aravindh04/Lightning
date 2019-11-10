@@ -1,0 +1,19 @@
+<aura:component>
+	<!--Html tags - Dom elements-->
+	<!--<table></table>-->
+	<button class="slds-button slds-button_neutral">Test Button 1
+		html dom</button>
+	<button class="slds-button slds-button_brand">Test Button 2
+		html dom</button>
+	<button class="slds-button slds-button_success anjali"
+		style="width: 4px; border: 2px; word-break: break-all;">Test
+		Button 3 html dom</button>
+	<button class="slds-button slds-button_base">Test Button 4
+		html dom</button>
+	<button class="slds-button slds-button_inverse"
+		onclick="{!c.handleClick}">Test Button 4 html dom</button>
+	<lightning:button class="custom" label="Test Button lightning"
+		onclick="{!c.handleClick}" variant="success" />
+	<lightning:button class="custom" label="Test Button lightning 2"
+		onclick="{!c.handleClick2}" variant="destructive" />
+</aura:component>

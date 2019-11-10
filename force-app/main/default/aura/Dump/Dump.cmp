@@ -1,0 +1,33 @@
+<aura:component
+	implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+	access="global">
+	<lightning:tabset>
+		<!--description="c:hello for Testing navigate to Component-->
+		<lightning:tab label="Navigation test" id="navigation">
+			<div class="slds-p-around_x-small">
+				<c:hello />
+			</div>
+		</lightning:tab>
+		<lightning:tab label="Notification Library" id="navigation">
+			<div class="slds-p-around_x-small">
+				<c:NotificationLibrary />
+			</div>
+		</lightning:tab>
+		<lightning:tab label="Omni ToolKit API" id="navigation">
+			<div class="slds-p-around_x-small">
+				<c:OmniToolKitAPI />
+			</div>
+		</lightning:tab>
+		<lightning:tab label="Overlay Library" id="navigation">
+			<div class="slds-p-around_x-small">
+				<c:OverlayLibrary />
+			</div>
+		</lightning:tab>
+
+		<lightning:tab label="User features" id="navigation">
+			<div class="slds-p-around_x-small">
+				<c:Customised_features />
+			</div>
+		</lightning:tab>
+	</lightning:tabset>
+</aura:component>

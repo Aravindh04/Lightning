@@ -1,0 +1,14 @@
+<aura:component>
+	<lightning:tabset>
+		<!--description="c:hello for Testing navigate to Component-->
+		<lightning:tab label="Navigation test" id="navigation">
+			<div class="slds-p-around_x-small">
+				<c:Custom_Send_email />
+			</div>
+		</lightning:tab>
+		<lightning:tab label="Notification Library" id="nav2">
+			<div class="slds-p-around_x-small"></div>
+		</lightning:tab>
+	</lightning:tabset>
+
+</aura:component>

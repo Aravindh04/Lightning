@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>User_master_Compact_layout</fullName>
+    <fields>Name</fields>
+    <fields>Email__c</fields>
+    <fields>Total_Expence__c</fields>
+    <fields>To_Get__c</fields>
+    <fields>To_Pay__c</fields>
+    <fields>Paid__c</fields>
+    <fields>Received__c</fields>
+    <label>User master Compact layout</label>
+</CompactLayout>

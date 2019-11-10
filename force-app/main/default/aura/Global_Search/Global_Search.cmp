@@ -1,0 +1,366 @@
+<aura:component controller="SchemaObjectsForLightning"
+	extends="c:Generic_Component">
+	<aura:attribute name="mSObjects" type="Map" />
+	<aura:attribute name="mSObjFlds" type="object" />
+	<aura:attribute name="users" type="List" />
+	<aura:attribute name="currentUser" type="User" />
+	<aura:attribute name="currentProfile" type="profile" />
+	<aura:attribute name="profiles" type="List" />
+	<aura:attribute name="sObjects" type="List" />
+	<aura:attribute name="selSObjName" type="String" default="Object name" />
+	<aura:attribute name="allFields" type="List" />
+	<aura:attribute name="tempAllFields" type="List" />
+	<aura:attribute name="strdFields" type="List" />
+	<aura:attribute name="custFields" type="List" />
+	<aura:attribute name="options" type="List" default="[]" />
+	<aura:attribute name="values" type="List" default="[]" />
+	<aura:attribute name="pkListVals" type="List" default="[]" />
+	<aura:attribute name="cndOperts" type="List" default="[]" />
+	<aura:attribute name="records" type="Object" />
+	<aura:attribute name="feildDescribe" type="list" />
+	<aura:attribute name="screenHeight" type="String" />
+	<aura:attribute name="fldDescription" type="Map" />
+
+	<ltng:require
+		styles="{! $Resource.	datatable + '/DataTables-1.10.19/media/css/jquery.dataTables.min.css'}"
+		scripts="{!join(',', 
+                           $Resource.jquery331 , 
+                           $Resource.datatable + '/DataTables-1.10.19/media/js/jquery.dataTables.min.js')
+                           }"
+		afterScriptsLoaded="{!c.scriptsLoaded}" />
+
+	<!--init function which is call on component load -->
+	<aura:handler name="init" value="{!this}" action="{!c.intialLoad}" />
+	<lightning:layout multipleRows="true">
+		<lightning:layoutItem size="3" class="slds-p-top_xx-small"
+			aura:Id="editorSection">
+			<div class="editorSection slds-box">
+				<div style="font-size: 20px; font-weight: bold;">Configure</div>
+				<lightning:select aura:Id="userName" name="User"
+					label="{!'User &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;('+(v.users.length-1) +')'}"
+					required="true" value="{!v.currentUser.Id}">
+					<aura:iteration items="{!v.users}" var="userName">
+						<option title="{!userName.Name}" value="{!userName}">{!userName.Name}</option>
+					</aura:iteration>
+				</lightning:select>
+				<lightning:select aura:Id="profileName" name="Profile"
+					label="{!'Search for &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;('+(v.profiles.length-1) +')'}"
+					required="true" value="{!v.currentProfile.Id}">
+					<aura:iteration items="{!v.profiles}" var="profileName">
+						<option title="{!profileName.Name}" label="{!profileName.Name}"
+							value="{!profileName}" />
+					</aura:iteration>
+				</lightning:select>
+				<lightning:select aura:Id="sObjName" name="Search for"
+					label="{!'Search for &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;('+(v.sObjects.length-1) +')'}"
+					required="true" onchange="{!c.onObjChange}">
+					<aura:iteration items="{!v.sObjects}" var="objName">
+						<option title="{!objName.value}" value="{!objName.value}">{!objName.label}</option>
+					</aura:iteration>
+				</lightning:select>
+
+				<lightning:accordion aura:id="accordion"
+					activeSectionName="Field Selection">
+					<lightning:accordionSection name="Field Selection"
+						label="Field Selection">
+						<lightning:dualListbox aura:Id='fldBox' name="Field Selection"
+							label="Select fields" sourceLabel="Available" required="true"
+							disabled="true" selectedLabel="Selected" options="{!v.options}"
+							value="{!v.values}" min="1" max="7"
+							onchange="{! c.handleChange }" onmouseover="{!c.expandEditor}"
+							onmouseout="{!c.shrinkEditor}" />
+					</lightning:accordionSection>
+
+					<lightning:accordionSection name="Conditions" label="Conditions">
+						<lightning:layout multipleRows="true">
+							<lightning:layoutItem size="9" class="slds-p-top_xxx-small">
+								<lightning:select aura:Id="fldName" name="Select fields"
+									label="Select fields" disabled="true"
+									onchange="{!c.handleCNdFldChange}">
+									<aura:iteration items="{!v.options}" var="fldName">
+										<option value="{!fldName.value}" title="{!fldName.value}">{!fldName.label}</option>
+									</aura:iteration>
+								</lightning:select>
+							</lightning:layoutItem>
+
+							<lightning:layoutItem size="3" class="slds-p-top_xxx-small">
+								<lightning:select aura:Id="ipCondition" label="Operator"
+									disabled="true" onchange="{!c.getVal}">
+									<aura:iteration items="{!v.cndOperts}" var="opratr">
+										<option value="{!opratr.value}" title="{!opratr.value}">{!opratr.label}</option>
+									</aura:iteration>
+								</lightning:select>
+							</lightning:layoutItem>
+
+							<lightning:layoutItem size="12" class="slds-p-top_xxx-small">
+								<aura:if isTrue="{!v.pkListVals.length > 0}">
+									<lightning:select aura:Id="pklstVals" label="Select value">
+										<aura:iteration items="{!v.pkListVals}" var="value">
+											<option value="{!value}" title="{!value}">{!value}</option>
+										</aura:iteration>
+									</lightning:select>
+									<aura:set attribute="else">
+										<lightning:input aura:Id="ipValue" name="input2"
+											placeholder="Enter Value" />
+									</aura:set>
+								</aura:if>
+							</lightning:layoutItem>
+						</lightning:layout>
+
+					</lightning:accordionSection>
+
+					<lightning:accordionSection name="Arrangements"
+						label="Arrangements">
+						<!--Record Limit set-->
+						<lightning:input aura:Id="limit" label="Record limit"
+							type="number" maxlength="3" placeholder="Enter record limit" />
+
+						<lightning:layout multipleRows="true">
+							<lightning:layoutItem size="4" class="slds-p-top_xxx-small">
+								<lightning:select aura:Id="sordCnd" label="Sort type">
+									<option value="ORDER BY">Order by</option>
+								</lightning:select>
+							</lightning:layoutItem>
+							<lightning:layoutItem size="8" class="slds-p-top_xxx-small">
+								<lightning:select aura:Id="sortByfld" name="Select field"
+									label="Select field" disabled="false">
+									<aura:iteration items="{!v.options}" var="fldName">
+										<option value="{!fldName.value}" title="{!fldName.value}">{!fldName.label}</option>
+									</aura:iteration>
+								</lightning:select>
+							</lightning:layoutItem>
+							<lightning:layoutItem size="6" class="slds-p-top_xxx-small">
+								<lightning:select aura:Id="sordOrd" label="Sort order">
+									<option value="ASC">Ascending</option>
+									<option value="DESC">Descending</option>
+								</lightning:select>
+							</lightning:layoutItem>
+						</lightning:layout>
+
+					</lightning:accordionSection>
+				</lightning:accordion>
+
+
+				<!--<ul class="slds-tree" role="tree" data-aura-rendered-by="2551:17;a">
+                    <li data-name="lightning" aria-expanded="false" role="treeitem" aria-level="1" aria-label="Tree Branch" data-aura-rendered-by="10181:0">
+                        <div class="slds-tree__item" data-aura-rendered-by="10182:0">
+                            <lightning:buttonIcon iconName="utility:chevronright" variant="bare" size="small" alternativeText="View More" onclick="{! c.viewEditor }" title="Collapse Tree Branch"/>
+                            <span class="slds-tree__item-label slds-truncate" title="Tree Branch" data-aura-rendered-by="10190:0">Field Selection</span>
+                        </div>
+                        
+                    </li>
+                </ul>-->
+
+				<lightning:layout multiplerows="true">
+					<lightning:layoutItem size="12" padding="around-small">
+						<div>
+							<lightning:button aura:Id="getRecBtn" label="Get records"
+								class="slds-hide" title="Get Records"
+								onclick="{!c.handleGetRecords}" />
+						</div>
+						<div>
+							<lightning:button aura:Id="getDesBtn"
+								label="Get Fields description" class="slds-hide"
+								title="Get Field describe" onclick="{!c.handleGetFldDescribe}" />
+						</div>
+						<div>
+							<lightning:button aura:Id="getsObjDesBtn"
+								label="Get Object description" class="slds-hide"
+								title="Get Object description"
+								onclick="{!c.handleGetSObjDescribe}" />
+						</div>
+					</lightning:layoutItem>
+				</lightning:layout>
+			</div>
+
+		</lightning:layoutItem>
+
+		<lightning:layoutItem size="9" padding="around-small"
+			aura:Id="dataSection">
+			<div style="position: relative"
+				class="slds-grid slds-grid_align-spread">
+				<div>
+					<lightning:button aura:Id="leftBtn" variant="base"
+						iconName="utility:left" title="Hide Configure"
+						onclick="{! c.hideEditor }" />
+					<lightning:button aura:Id="rightBtn" variant="base"
+						iconName="utility:right" title="Expand Configure"
+						onclick="{! c.viewEditor }" class="slds-hide" />
+				</div>
+				<div style="font-size: 24px;">
+					Power Admin
+					<lightning:formattedText value="@Admin tool" class="naming" />
+				</div>
+			</div>
+
+			<!--<aura:iteration items="{!v.feildDescribe}" var="rec">
+        		<tr>
+            		{!rec}
+        		</tr>
+    		</aura:iteration>-->
+
+			<!--Create a placehodler and push the components here-->
+
+
+			<lightning:tabset selectedTabId="record" aura:Id="dataTabSet">
+
+				<aura:if isTrue="{!v.records.sObjList.length > 0}">
+					<lightning:tab label="Records" id="record">
+						<div aura:Id="recordList">
+							<div class="slds-m-around_medium">
+								<table id="tableId" class="slds-table" cellspacing="0"
+									width="100%">
+									<thead>
+										<tr>
+											<th class="slds-truncate DTHeader" title="Record Id">Record
+												Id</th>
+											<aura:iteration items="{!v.values}" var="val">
+												<th class="slds-truncate" title="{!val}">{!val}</th>
+											</aura:iteration>
+										</tr>
+									</thead>
+									<tbody>
+										<aura:iteration items="{!v.records.sObjList}" var="rec">
+											<tr>
+												<td class="slds-truncate DTdata" title="{!rec.Id}">
+													{!rec.Id}</td>
+												<c:Record_row_substitute
+													fieldNames="{!v.records.fieldNames}" sObjRec="{!rec}" />
+											</tr>
+										</aura:iteration>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</lightning:tab>
+
+				</aura:if>
+
+				<aura:if isTrue="{!v.fldDescription != null}">
+					<lightning:tab label="Field description" id="fields">
+						<!--
+                        <lightning:tabset variant="vertical">
+                            <aura:iteration items="{!v.values}" var="fldName">
+                                <lightning:tab class="{!fldName}" label="{!fldName}" onactive="{! c.handleActiveTab }">
+                                    <table border="1" id="{!fldName}">
+                                        <thead>
+                                            <tr>	<th>Field</th>	<th>Value</th>	</tr>
+                                        </thead>
+                                        <tbody id="{!fldName+ ' dTable'}"/>
+                                    </table>
+                                </lightning:tab>
+                            </aura:iteration>
+                        </lightning:tabset>
+						-->
+						<lightning:layout multipleRows="true">
+							<lightning:layoutItem size="3" padding="around-small">
+								<lightning:verticalNavigation shaded="true"
+									onbeforeselect="{!c.handleFieldNavigation}">
+									<lightning:verticalNavigationSection label="Select to view">
+										<aura:iteration items="{!v.values}" var="val">
+											<lightning:verticalNavigationItem label="{!val}"
+												name="{!val}" />
+										</aura:iteration>
+									</lightning:verticalNavigationSection>
+								</lightning:verticalNavigation>
+							</lightning:layoutItem>
+							<lightning:layoutItem size="9" padding="around-small">
+								<table
+									class="slds-table slds-table_bordered slds-table_cell-buffer fieldTable"
+									id="fldTable" />
+							</lightning:layoutItem>
+						</lightning:layout>
+
+					</lightning:tab>
+				</aura:if>
+
+				<aura:if
+					isTrue="{!v.strdFields.length > 0 || v.custFields.length > 0  }">
+					<lightning:tab label="SObject Description" id="sObjDesc">
+						<lightning:tabset>
+							<lightning:tab label="SObject Description" id="sObjDesc">
+								<div style="font-size: 20px; padding: 10px;">
+									{!v.selSObjName}</div>
+								<lightning:layout multipleRows="true">
+									<aura:if isTrue="{!v.strdFields.length > 0}">
+										<lightning:layoutItem smallDeviceSize="6" mediumDeviceSize="4"
+											largeDeviceSize="4" size="12" padding="around-small">
+                                            Standard Fields ({!v.strdFields.length})
+                                            <div
+												class="slds-dueling-list__options sObjFields">
+												<ul class="slds-listbox slds-listbox_vertical">
+													<aura:iteration items="{!v.strdFields}" var="stdFld">
+														<li
+															class="slds-listbox__option slds-listbox__option_plain">{!stdFld.label}</li>
+													</aura:iteration>
+												</ul>
+												<aura:set attribute="else">
+													<div class="slds-align_absolte-center">No Standard
+														fields</div>
+												</aura:set>
+											</div>
+										</lightning:layoutItem>
+									</aura:if>
+
+									<aura:if isTrue="{!v.custFields.length > 0}">
+										<lightning:layoutItem smallDeviceSize="6" mediumDeviceSize="4"
+											largeDeviceSize="4" size="12" padding="around-small">
+                                            Custom Fields ({!v.custFields.length})
+                                            <div
+												class="slds-dueling-list__options sObjFields">
+												<ul class="slds-listbox slds-listbox_vertical">
+													<aura:iteration items="{!v.custFields}" var="cusFld">
+														<li
+															class="slds-listbox__option slds-listbox__option_plain">{!cusFld.label}
+														</li>
+													</aura:iteration>
+												</ul>
+												<aura:set attribute="else">
+													<div class="slds-align_absolte-center">No Custom
+														fields</div>
+												</aura:set>
+											</div>
+										</lightning:layoutItem>
+									</aura:if>
+								</lightning:layout>
+							</lightning:tab>
+							<lightning:tab label="Object-Field description" id="fldDesc">
+								<lightning:layout multipleRows="true">
+									<lightning:layoutItem size="3" padding="around-small">
+										<lightning:verticalNavigation shaded="true"
+											onbeforeselect="{!c.handleFieldSelection}">
+											<lightning:input label="Search"
+												placeholder="Enter the field name.."
+												onchange="{!c.filterFields}" />
+											<aura:renderIf isTrue="{!v.tempAllFields.length >0}">
+												<lightning:verticalNavigationSection
+													class="field-selection_section">
+													<aura:iteration items="{!v.tempAllFields}" var="val">
+														<lightning:verticalNavigationItem label="{!val}"
+															name="{!val}" />
+													</aura:iteration>
+												</lightning:verticalNavigationSection>
+												<aura:set attribute="else">
+													<div style="height: 10rem; padding: 1rem;"
+														class="slds-align_absolute-center">No matching
+														fields</div>
+												</aura:set>
+											</aura:renderIf>
+										</lightning:verticalNavigation>
+									</lightning:layoutItem>
+									<lightning:layoutItem size="9" padding="around-small">
+										<table
+											class="slds-table slds-table_bordered slds-table_cell-buffer fieldTable"
+											id="fldTable2" />
+									</lightning:layoutItem>
+								</lightning:layout>
+
+							</lightning:tab>
+						</lightning:tabset>
+					</lightning:tab>
+				</aura:if>
+			</lightning:tabset>
+
+		</lightning:layoutItem>
+	</lightning:layout>
+</aura:component>

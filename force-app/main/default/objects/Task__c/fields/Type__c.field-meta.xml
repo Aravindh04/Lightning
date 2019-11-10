@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Type__c</fullName>
+    <externalId>false</externalId>
+    <label>Type</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>Category__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Floor</fullName>
+                <default>false</default>
+                <label>Floor</label>
+            </value>
+            <value>
+                <fullName>Kitchen</fullName>
+                <default>false</default>
+                <label>Kitchen</label>
+            </value>
+            <value>
+                <fullName>Washrroom</fullName>
+                <default>false</default>
+                <label>Washrroom</label>
+            </value>
+            <value>
+                <fullName>Others</fullName>
+                <default>false</default>
+                <label>Others</label>
+            </value>
+            <value>
+                <fullName>Rent Payment</fullName>
+                <default>false</default>
+                <label>Rent Payment</label>
+            </value>
+            <value>
+                <fullName>Pending Dues</fullName>
+                <default>false</default>
+                <label>Pending Dues</label>
+            </value>
+            <value>
+                <fullName>Electric Bill</fullName>
+                <default>false</default>
+                <label>Electric Bill</label>
+            </value>
+            <value>
+                <fullName>Water Bill</fullName>
+                <default>false</default>
+                <label>Water Bill</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Cleaning</controllingFieldValue>
+            <valueName>Floor</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Cleaning</controllingFieldValue>
+            <valueName>Kitchen</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Cleaning</controllingFieldValue>
+            <valueName>Washrroom</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Cleaning</controllingFieldValue>
+            <valueName>Others</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Bill Payments</controllingFieldValue>
+            <valueName>Electric Bill</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Bill Payments</controllingFieldValue>
+            <valueName>Water Bill</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Sending Money</controllingFieldValue>
+            <valueName>Rent Payment</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Sending Money</controllingFieldValue>
+            <valueName>Pending Dues</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

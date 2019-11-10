@@ -1,0 +1,166 @@
+<!--**********************************************************************************
+@   Container type		: Markup
+@   Dependecy	 		: Child component
+@   Registered events 	: -
+@   Init in Use		 	: Yes
+@   Extends/Extensible	: No
+@ 	Number of Attributes: 43
+@ 	Number of handlers	: 3
+@   Description 		: To support the Parent component as a modal box with all available objects
+@ 	Copy rights @		: 
+****************************************************************************************-->
+
+
+<aura:component>
+	<aura:attribute name="sObjectsList" type="List"
+		default="[{label : 'Matter', value : 'Matter__c'}]" />
+
+	<aura:attribute name="listOfObjects" type="List"
+		default="[{label : 'Matter', value : 'Matter__c'}]" />
+
+	<aura:attribute name="selSObject" type="Object"
+		default="{label : '', value :''}" />
+	<aura:attribute name="hasObject" type="boolean" default="false" />
+
+	<aura:attribute name="cusObj" type="List"
+		default="[{label : 'Matter', value : 'Matter__c'}]" />
+	<aura:attribute name="stdObj" type="List"
+		default="[{label : 'Account', value : 'Account'}]" />
+
+	<aura:attribute name="viewStd" type="boolean" default="true" />
+	<aura:attribute name="viewCus" type="boolean" default="true" />
+
+
+	<aura:registerEvent name="objectSelected"
+		type="c:ObjectField_Mapping_Event" />
+
+
+	<!--Loading State-->
+	<aura:handler event="aura:waiting" action="{!c.showSpinner}" />
+	<aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}" />
+
+
+	<!--Handler for getting the data-->
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+
+	<!--MODAL BOX Start From Here -->
+	<div class="slds-modal slds-fade-in-open myModal">
+		<div class="slds-modal__container slds-media_responsive">
+			<!--@@@@@@@@@@@@@ MODAL HEADER @@@@@@@@@@@@@@-->
+			<div class="slds-modal__header">
+				<button
+					class="slds-button slds-modal__close slds-button-_icon-inverse"
+					title="Close" onclick="{!c.closeModal}">
+					X <span class="slds-assistive-text">Close</span>
+				</button>
+				<!--Header Title-->
+				<h2 class="slds-text-heading_large">Master Object Select</h2>
+
+			</div>
+
+			<!--@@@@@@@@@@@@ MODAL BODY @@@@@@@@@@@@-->
+			<div class="slds-modal__content padding">
+				<lightning:layout multipleRows="true" horizontalAlign="center">
+					<lightning:layoutItem size="12">
+						<!--<div class="slds-grid slds-grid_align-spread">-->
+						<div style="padding: .75rem; width: 50%;">
+							<lightning:input aura:id="searchIp" name="Search String"
+								label="Search" placeholder="Find Object"
+								onchange="{!c.searchString}" />
+						</div>
+						<!--<div class="slds-grid ">
+                                <div><lightning:input class="padding" title="Standard Objects" type="checkbox-button" checked="{!v.viewStd}" onchange="{!c.stdCmpView}"/></div>
+                                <div><lightning:input class="padding" title="Custom Objects" type="checkbox-button" checked="{!v.viewCus}" onchange="{!c.cusCmpView}" /></div>
+                           </div>
+                        </div>-->
+					</lightning:layoutItem>
+
+					<lightning:layoutItem size="12" smallDeviceSize="12"
+						mediumDeviceSize="12" largeDeviceSize="20"
+						padding="horizontal-small">
+						<tr class="slds-align_absolute-center slds-text-heading_xxsmall"
+							style="background-color: #E8F2F8">Object list
+						</tr>
+						<div class="objBox">
+							<ol class="slds-listbox slds-listbox_vertical">
+								<aura:if isTrue="{!v.viewCus &amp;&amp; v.viewStd}">
+									<aura:iteration items="{!v.listOfObjects}" var="obj">
+										<li class="slds-listbox__item" data-val="{!obj.value}"
+											data-label="{!obj.label}" onclick="{!c.getValue}">
+											<div
+												class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_inline"
+												aria-selected="false" draggable="true" role="option"
+												tabindex="0">
+												<span class="slds-media__body"> <span
+													class="slds-truncate" title="{!obj.value}">{!obj.label}&nbsp;&nbsp;&nbsp;({!obj.value})</span>
+												</span>
+											</div>
+										</li>
+									</aura:iteration>
+								</aura:if>
+							</ol>
+						</div>
+					</lightning:layoutItem>
+
+					<!--
+                    <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="12" largeDeviceSize="6" padding="horizontal-small">
+                        <tr class="slds-align_absolute-center" style="background-color:#E8F2F8">Standard Objects</tr>
+                        <div class="objBox">
+                        <aura:if isTrue="{!v.viewStd}">
+                            <aura:if isTrue="{!v.viewAPI}">
+                                <aura:iteration items="{!v.stdObj}" var="obj">
+                                    <tr data-val="{!obj.value}" data-label="{!obj.label}" onclick="{!c.getValue}">{!obj.value}</tr>
+                                </aura:iteration>
+                                <aura:set attribute="else">
+                                    <aura:iteration items="{!v.stdObj}" var="obj">
+                                        <tr data-val="{!obj.value}" data-label="{!obj.label}" onclick="{!c.getValue}">{!obj.label}</tr>
+                                    </aura:iteration>
+                                </aura:set>
+                            </aura:if>
+                            <aura:set attribute="else">
+                                <div class="slds-align_absolute-center" style="height: 12.5rem">
+                                    Standard Objects List
+                                </div>
+                            </aura:set>
+	                        </aura:if>
+                        </div>
+                    </lightning:layoutItem>
+					-->
+
+					<aura:if isTrue="{!v.sObjectsList.length > 0}">
+						<lightning:layoutItem size="12" padding="around-small">
+							<div class="slds-box">
+								<aura:if isTrue="{!v.hasObject}">
+									<div class="slds-text-heading--label slds-text-heading_small">Selected
+										Object Information</div>
+									<div class="slds-grid slds-grid_align-spread padding">
+										<div class="slds-text-color_weak">Label</div>
+										<div>{!v.selSObject.label}</div>
+										<div class="slds-text-color_weak">API</div>
+										<div>{!v.selSObject.value}</div>
+									</div>
+									<aura:set attribute="else">
+										<div
+											class="slds-align_absolute-center slds-text-heading--label slds-text-heading_small"
+											style="height: 1rem">Select an Object to view</div>
+									</aura:set>
+								</aura:if>
+							</div>
+						</lightning:layoutItem>
+					</aura:if>
+				</lightning:layout>
+			</div>
+
+			<!--@@@@@@@@@@@@@@ MODAL FOOTER @@@@@@@@@@@@@@-->
+			<div class="slds-modal__footer slds-modal__footer_directional">
+				<lightning:button aura:Id="setUpMail" label="Save" variant="brand"
+					title="Save" onclick="{!c.saveSObject}" />
+				<lightning:button label="Cancel"
+					class="cancelSendButton slds-float_right"
+					title="Close the Quick view" onclick="{!c.closeModal}" />
+			</div>
+		</div>
+	</div>
+	<div class="slds-backdrop slds-backdrop--open"></div>
+</aura:component>

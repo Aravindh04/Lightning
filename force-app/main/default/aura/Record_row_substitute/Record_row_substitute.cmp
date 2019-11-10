@@ -1,0 +1,10 @@
+<aura:component>
+	<aura:attribute name="fieldNames" type="list" default="" />
+	<aura:attribute name="sObjRec" type="sObject" />
+	<aura:attribute name="fieldData" type="list" />
+
+	<aura:handler name="init" value="{!this}" action="{!c.mapData}" />
+	<aura:iteration items="{!v.fieldData}" var="col">
+		<td class="slds-truncate DTdata" title="{!col}">{!col}</td>
+	</aura:iteration>
+</aura:component>

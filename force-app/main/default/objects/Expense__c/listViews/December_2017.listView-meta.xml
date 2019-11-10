@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>December_2017</fullName>
+    <columns>NAME</columns>
+    <columns>Member__c</columns>
+    <columns>Amount__c</columns>
+    <columns>Expense_on__c</columns>
+    <columns>Category__c</columns>
+    <columns>Expense_Date__c</columns>
+    <columns>Payment_Method__c</columns>
+    <columns>Comments__c</columns>
+    <columns>CREATED_DATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Expense_Date__c</field>
+        <operation>greaterThan</operation>
+        <value>12/1/2017</value>
+    </filters>
+    <filters>
+        <field>Expense_Date__c</field>
+        <operation>lessThan</operation>
+        <value>12/31/2017</value>
+    </filters>
+    <label>December 2017</label>
+</ListView>

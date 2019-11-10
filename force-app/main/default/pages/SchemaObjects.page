@@ -1,0 +1,61 @@
+<apex:page controller="SchemaObjects">
+	<apex:form id="od">
+		<apex:pageBlock >
+			<apex:pageBlockSection >
+				<apex:pageBlockSectionItem >
+					<apex:outputLabel value="Object List" />
+					<apex:selectList size="1" value="{!selectedObj}">
+						<apex:selectOptions value="{!objects}" />
+						<apex:actionSupport event="onchange" action="{!details}"
+							reRender="od" />
+					</apex:selectList>
+				</apex:pageBlockSectionItem>
+				<apex:pageBlockSectionItem >
+                    {!objectDescription}
+                </apex:pageBlockSectionItem>
+
+				<apex:pageBlockSectionItem >
+					<apex:panelGrid columns="3">
+						<apex:panelGroup style="width:40%">
+							<apex:selectList value="{!sfields}" multiselect="true"
+								style="width:120px; height:120px">
+								<apex:selectOptions value="{!fnsOptions}" />
+							</apex:selectList>
+						</apex:panelGroup>
+						<apex:panelGroup style="width:20%">
+							<table height="120px">
+								<tr>
+									<td><apex:commandButton value="Add" action="{!addFields}"
+											style="width:80px" reRender="od" /></td>
+								</tr>
+								<tr>
+									<td><apex:commandButton value="remove"
+											action="{!removeFields}" style="width:80px" reRender="od" />
+									</td>
+								</tr>
+							</table>
+
+						</apex:panelGroup>
+						<apex:panelGroup style="width:40%">
+							<apex:selectList value="{!rfields}" multiselect="true"
+								style="width:210px; height:120px">
+								<apex:selectOptions value="{!fsOptions}" />
+							</apex:selectList>
+						</apex:panelGroup>
+					</apex:panelGrid>
+				</apex:pageBlockSectionItem>
+			</apex:pageBlockSection>
+			<apex:pageBlockSection >
+				<apex:pageBlockSectionItem >
+					<apex:pageBlockTable value="{!myData}" var="record">
+						<apex:repeat value="{!queryFields}" var="data">
+							<apex:column value="{!record[data]}" />
+						</apex:repeat>
+					</apex:pageBlockTable>
+				</apex:pageBlockSectionItem>
+				<apex:commandButton value="Query" action="{!queryMyData}"
+					rerender="od" />
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

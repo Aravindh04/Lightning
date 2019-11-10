@@ -1,0 +1,19 @@
+<aura:component extensible="true">
+	<aura:attribute name="sObjects" type="List"
+		default="[{label : 'Matter', value : 'Matter__c'}]" />
+	<aura:attribute name="selectTab" type="String" default="caseTypeSel" />
+	<aura:attribute name="progress" type="String" default="1" />
+	<aura:attribute name="stdOptions" type="Map" />
+
+	<aura:attribute name="typeOptionsA" type="List"
+		default="[{label : 'Hip Implant' ,value : 'Hip Implant'},{label : 'Automobile Accident' ,value : 'Automobile Accident'},{label : 'Immigration' ,value : 'Immigration'}]" />
+	<aura:attribute name="stageOptionsA" type="List"
+		default="[{label : 'Court House' ,value : 'Court House'},{label : 'Settlement' ,value : 'Settlement'},{label : 'Documentation' ,value : 'Documentation'}]" />
+
+	<aura:attribute name="allValues" type="Map" default="{}" />
+
+	<!--Standard Case Type and Stage-->
+	<aura:attribute name="typeFields" type="Map" default="{}" />
+	<aura:attribute name="stageFields" type="Map" default="{}" />
+    {!v.body}
+</aura:component>

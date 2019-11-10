@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Tejas_Transaction</fullName>
+    <columns>NAME</columns>
+    <columns>Amount__c</columns>
+    <columns>Expense_Date__c</columns>
+    <columns>Category__c</columns>
+    <columns>CREATED_DATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Member__c</field>
+        <operation>equals</operation>
+        <value>Tejas</value>
+    </filters>
+    <label>Tejas Transaction</label>
+</ListView>

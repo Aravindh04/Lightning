@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Current_month_Records</fullName>
+    <columns>Category__c</columns>
+    <columns>Amount__c</columns>
+    <columns>Member__c</columns>
+    <columns>Expense_Date__c</columns>
+    <columns>Expense_on__c</columns>
+    <columns>Comments__c</columns>
+    <columns>Payment_Method__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Expense_Date__c</field>
+        <operation>equals</operation>
+        <value>THIS_MONTH</value>
+    </filters>
+    <filters>
+        <field>Expense_on__c</field>
+        <operation>equals</operation>
+        <value>Common</value>
+    </filters>
+    <label>Current month Records</label>
+</ListView>

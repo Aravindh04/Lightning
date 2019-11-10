@@ -1,0 +1,43 @@
+<aura:component controller="mappingsController"
+	description="Lookup_ObjectFields">
+	<aura:attribute name="parentFields" type="Map" />
+	<div class="slds-grid ">
+
+		<div class="slds-col"
+			style="border-right: 2px solid #d8dde6; width: 250px; padding-right: 0px;">
+
+			<nav class="slds-nav-vertical" aria-label="Sub page">
+				<div class="slds-nav-vertical__section">
+					<div>
+						<h2 id="entity-header"
+							class="slds-nav-vertical__title slds-text-title_caps slds-text-heading--large">{!v.title}</h2>
+
+						<ui:scrollerWrapper class="scrollable scroll-frame">
+							<ul>
+								<aura:iteration items="{!v.typeFields.list}" var="item">
+									<li><a onclick="{!c.fieldSelected}"> {!item.label} </a> <aura:if
+											isTrue="{!item.isReference}">
+											<button
+												class="slds-button slds-button--icon slds-box_xx-small slds-text-align_center slds-m-around_xx-small"
+												data-id="{!listvalindex}">
+												<lightning:Icon iconName="standard:search" size="small"
+													alternativeText="Lookup" aura:id="lookupBtn"
+													variant="inverse" />
+											</button>
+										</aura:if></li>
+									<aura:if isTrue="{!item.isReference}">
+										<aura:set attribute="else">
+											<br />
+										</aura:set>
+									</aura:if>
+								</aura:iteration>
+
+							</ul>
+						</ui:scrollerWrapper>
+					</div>
+				</div>
+			</nav>
+		</div>
+		<div class="slds-col" aura:id="lookupNavigationPlaceHolder" />
+	</div>
+</aura:component>

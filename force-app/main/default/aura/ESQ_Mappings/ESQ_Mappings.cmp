@@ -1,0 +1,370 @@
+<aura:component controller="mappingsController"
+	implements="force:appHostable,flexipage:availableForAllPageTypes"
+	access="global">
+
+	<aura:attribute name="allValues" type="Map" default="{}" />
+	<aura:attribute name="sObjects" type="Map" default="{}" />
+	<aura:attribute name="typeFields" type="Map" default="{}" />
+	<aura:attribute name="stageFields" type="Map" default="{}" />
+	<aura:attribute name="typeList" type="List" default="{}" />
+	<aura:attribute name="stageList" type="List" default="{}" />
+	<aura:attribute name="value" type="List" />
+	<aura:attribute name="parentFields" type="Map" default="{}" />
+	<aura:attribute name="parentStageFields" type="Map" default="{}" />
+	<aura:attribute name="parentTypeFields" type="Map" default="{}" />
+	<aura:attribute name="summary" type="Map" />
+	<aura:attribute name="stdOptions" type="Map" />
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+	<aura:handler name="fieldSelected" event="c:ESQ_MappingsEvent"
+		action="{!c.selectThisParentField}" />
+
+	<div class="slds-box slds-theme_default">
+
+		<div class="c-container">
+			<lightning:layout multipleRows="true" pullToBoundary="small">
+				<lightning:layoutItem padding="around-small" size="6"
+					class="slds-box">
+					<div class="c-container max-height scroll-frame">
+						<lightning:layout multipleRows="true" pullToBoundary="small">
+							<lightning:layoutItem padding="around-small" size="12">
+								<lightning:combobox aura:id="selectedSObject" name="Object"
+									label="Object" value="{!v.sObjects.selected}"
+									placeholder="Select sObject" options="{! v.sObjects.list }"
+									onchange="{! c.sObjectSelected }" />
+							</lightning:layoutItem>
+							<lightning:layoutItem padding="around-small" size="12">
+								<!--lightning:combobox name="Type" 
+                                                    label="Type Field" 
+                                                    value="{!v.typeFields.selected}" 
+                                                    placeholder="Select Type Field" 
+                                                    options="{! v.typeFields.list }" 
+                                                    onchange="{! c.typeFieldSelected }"/-->
+								<lightning:select name="select1" label="Type Field"
+									value="{!v.typeFields.selected}"
+									onchange="{! c.typeFieldSelected }">
+									<option value="">Select Type Field</option>
+									<aura:iteration items="{!v.typeFields.list}" var="f">
+										<option value="{!f.value}" selected="{!f.selected}">
+											<div>
+												<aura:if isTrue="{!f.isReference}">
+													<div style="direction: rtl;" class="slds-float_right">
+														&#128270;</div>
+												</aura:if>
+												{!f.label}
+											</div>
+										</option>
+									</aura:iteration>
+								</lightning:select>
+                                {!if(not(empty(v.typeFields.selectedParentValue)),'>','')} {!v.typeFields.selectedParentValue}
+                            </lightning:layoutItem>
+							<lightning:layoutItem padding="around-small" size="12">
+								<!--lightning:combobox name="Stage" 
+                                                    label="Stage Field" 
+                                                    value="{!v.stageFields.selected}" 
+                                                    placeholder="Select Stage Field" 
+                                                    options="{! v.stageFields.list }" 
+                                                    onchange="{! c.stageFieldSelected }"/-->
+								<lightning:select name="select1" label="Stage Field"
+									value="{!v.stageFields.selected}"
+									onchange="{! c.stageFieldSelected }">
+									<option value="">Select Stage Field</option>
+									<aura:iteration items="{!v.stageFields.list}" var="f">
+										<option value="{!f.value}" selected="{!f.selected}">
+											<div>
+												<aura:if isTrue="{!f.isReference}">
+													<div style="direction: rtl;" class="slds-float_right">
+														&#128270;</div>
+												</aura:if>
+												{!f.label}
+											</div>
+										</option>
+									</aura:iteration>
+								</lightning:select>
+                                {!if(not(empty(v.stageFields.selectedParentValue)),'>','')} {!v.stageFields.selectedParentValue}
+                            </lightning:layoutItem>
+							<lightning:layoutItem padding="around-small" size="12">
+								<div class="slds-float_right">
+									<a class="slds-button slds-button_neutral"
+										onclick="{!c.selectionConfirmed}">Confirm</a>
+								</div>
+							</lightning:layoutItem>
+						</lightning:layout>
+					</div>
+				</lightning:layoutItem>
+				<lightning:layoutItem padding="around-small" size="6"
+					class="slds-box">
+					<div class="max-height scroll-frame">
+						Field Mapping:
+						<div class="c-container">
+							<lightning:layout multipleRows="true">
+								<aura:iteration items="{!v.allValues.numberFieldsMappings}"
+									var="s">
+									<lightning:layoutItem padding="around-small" size="6" class="">
+										<!--div class="slds-float_right slds-p-top_large">{!s.customLabel}</div-->
+										<lightning:input name="input5" disabled="true"
+											value="{!s.customLabel}" label="Litify Field" />
+
+									</lightning:layoutItem>
+									<lightning:layoutItem padding="around-small" size="6">
+										<lightning:combobox name="progress" label="ESQ Field"
+											value="{!s.standard}" placeholder="Select ESQ Field"
+											options="{!v.stdOptions.numberFields}"
+											onchange="{! c.matterStageSelected }" />
+									</lightning:layoutItem>
+								</aura:iteration>
+							</lightning:layout>
+						</div>
+					</div>
+				</lightning:layoutItem>
+			</lightning:layout>
+		</div>
+
+		<div class="c-container">
+			<lightning:layout multipleRows="true" pullToBoundary="small">
+
+				<lightning:layoutItem padding="around-small" size="6"
+					class="slds-box">
+					<lightning:layout multipleRows="true">
+						<lightning:layoutItem padding="around-small" size="12"
+							class="slds-box">
+							<div class="max-height scroll-frame">
+								Case Type:
+								<div class="c-container">
+									<lightning:layout multipleRows="true">
+
+
+										<aura:iteration items="{!v.allValues.typesMappings}" var="s">
+											<lightning:layoutItem padding="around-small" size="6"
+												class="">
+												<lightning:input name="input5" disabled="true"
+													value="{!s.custom}" label="Litify Case Type" />
+											</lightning:layoutItem>
+											<lightning:layoutItem padding="around-small" size="6">
+												<lightning:combobox name="progress" label="ESQ Case Type"
+													value="{!s.standard}" placeholder="Select ESQ Type"
+													options="{!v.stdOptions.types}"
+													onchange="{! c.matterTypeSelected }" />
+											</lightning:layoutItem>
+										</aura:iteration>
+									</lightning:layout>
+								</div>
+							</div>
+						</lightning:layoutItem>
+						<lightning:layoutItem size="12" class="slds-box">
+                            Case Type:
+                            <lightning:layout multipleRows="true">
+								<lightning:layoutItem size="6" class="slds-box">
+									<div class="max-heightSec scroll-frame" style="">
+										<lightning:checkboxGroup name="Checkbox Group"
+											variant="label-hidden" options="{! v.typeList }"
+											value="{!v.value }" onchange="{! c.handleChange }" />
+									</div>
+								</lightning:layoutItem>
+								<lightning:layoutItem size="2">
+									<div>
+										<lightning:button
+											class="mapBtn slds-align_absolute-center slds-button_outline-brand"
+											iconName="utility:right" label="Map" iconPosition="right"
+											title="Map" onclick="{! c.handleClick }" />
+									</div>
+									<div style="padding-top: 6rem">
+										<lightning:button
+											class="mapBtn slds-align_absolute-center slds-button_outline-brand"
+											iconName="utility:left" label="Unmap" iconPosition="left"
+											title="Map" onclick="{! c.handleClick }" />
+									</div>
+								</lightning:layoutItem>
+								<lightning:layoutItem size="4" class="slds-box">
+									<div class="max-heightSec scroll-frame">
+										<lightning:checkboxGroup name="Checkbox Group"
+											variant="label-hidden" options="{!v.stdOptions.types}"
+											value="{!v.value}" onchange="{! c.handleChange }" />
+									</div>
+								</lightning:layoutItem>
+							</lightning:layout>
+							<aura:if isTrue="{!v.allValues.typesMappings != null}">
+								<lightning:button label="Change" variant="brand"
+									title="Change type" value="type" onclick="{! c.unHideModal }" />
+							</aura:if>
+						</lightning:layoutItem>
+					</lightning:layout>
+
+				</lightning:layoutItem>
+				<lightning:layoutItem padding="around-small" size="6"
+					class="slds-box">
+					<lightning:layout multipleRows="true">
+						<lightning:layoutItem padding="around-small" size="12"
+							class="slds-box">
+							<div class="max-height scroll-frame">
+								Case Stage:
+								<div class="c-container">
+									<lightning:layout multipleRows="true">
+										<aura:iteration items="{!v.allValues.stagesMappings}" var="s">
+											<lightning:layoutItem padding="around-small" size="6"
+												class="">
+												<!--label for="{!s.custom}" class="">Litify Case Stage</label>
+                                        <div id="{!s.custom}" class=" slds-p-top_large">{!s.custom}</div-->
+												<lightning:input name="input5" disabled="true"
+													value="{!s.custom}" label="Litify Case Stage" />
+
+											</lightning:layoutItem>
+											<lightning:layoutItem padding="around-small" size="6">
+												<lightning:combobox name="progress" label="ESQ Case Stage"
+													value="{!s.standard}" placeholder="Select ESQ Stage"
+													options="{!v.stdOptions.stages}"
+													onchange="{! c.matterStageSelected }" />
+											</lightning:layoutItem>
+										</aura:iteration>
+									</lightning:layout>
+								</div>
+							</div>
+						</lightning:layoutItem>
+						<lightning:layoutItem size="12" class="slds-box">
+                            Case Stage:
+                            <lightning:layout multipleRows="true">
+								<lightning:layoutItem size="6" class="slds-box">
+									<div class="max-heightSec scroll-frame" style="">
+										<lightning:checkboxGroup name="Checkbox Group"
+											variant="label-hidden" options="{!v.stageList}"
+											value="{!v.value }" onchange="{! c.handleChange }" />
+									</div>
+								</lightning:layoutItem>
+								<lightning:layoutItem size="2">
+									<div>
+										<lightning:button
+											class="mapBtn slds-align_absolute-center slds-button_outline-brand"
+											iconName="utility:right" label="Map" iconPosition="right"
+											title="Map" onclick="{! c.handleClick }" />
+									</div>
+									<div style="padding-top: 6rem">
+										<lightning:button
+											class="mapBtn slds-align_absolute-center slds-button_outline-brand"
+											iconName="utility:left" label="Unmap" iconPosition="left"
+											title="Map" onclick="{! c.handleClick }" />
+									</div>
+								</lightning:layoutItem>
+								<lightning:layoutItem size="4" class="slds-box">
+									<div class="max-heightSec scroll-frame">
+										<lightning:checkboxGroup name="Checkbox Group"
+											variant="label-hidden" options="{!v.stdOptions.stages}"
+											value="{!v.value}" onchange="{! c.handleChange }" />
+									</div>
+								</lightning:layoutItem>
+							</lightning:layout>
+							<aura:if isTrue="{!v.allValues.typesMappings != null}">
+								<lightning:button variant="brand" label="Change"
+									title="Change Stage" value="stage" onclick="{! c.unHideModal }" />
+							</aura:if>
+						</lightning:layoutItem>
+					</lightning:layout>
+
+				</lightning:layoutItem>
+
+				<lightning:layoutItem padding="around-small" size="12"
+					class="slds-box">
+					<a class="slds-button slds-button_brand"
+						onclick="{!c.getSummaries}"> Submit </a>
+				</lightning:layoutItem>
+				<lightning:layoutItem padding="around-small" size="12"
+					class="slds-box">
+                    {!v.allValues.mappings}
+                </lightning:layoutItem>
+			</lightning:layout>
+		</div>
+
+
+		<div aura:id="toast" class="slds-hide">
+			<div aria-hidden="false" aria-labelledby="prompt-heading-id"
+				aria-describedby="prompt-message-wrapper" role="alertdialog"
+				class="slds-modal slds-modal_prompt slds-fade-in-open">
+				<div class="slds-modal__container slds-modal_prompt" role="document"
+					id="prompt-message-wrapper" tabindex="0">
+					<div
+						class="{!'slds-modal__header slds-theme_alert-texture slds-theme_'+v.toastProps.type}">
+						<h2 class="slds-text-heading_medium" id="prompt-heading-id">{!v.toastProps.title}</h2>
+					</div>
+					<div class="slds-modal__content slds-p-around_medium">
+						<div>
+							<p>{!v.toastProps.message}</p>
+						</div>
+					</div>
+					<div class="slds-modal__footer slds-theme_default"
+						onclick="{!c.hideToast}">
+						<button class="slds-button slds-button_neutral">Ok</button>
+					</div>
+				</div>
+			</div>
+			<div class="slds-backdrop slds-backdrop_open"></div>
+		</div>
+
+		<div aura:id="lookupParentModalType" class="slds-hide"
+			style="height: 640px;">
+			<section role="dialog" tabindex="-1"
+				aria-labelledby="modal-heading-01" aria-modal="true"
+				aria-describedby="modal-content-id-1"
+				class="slds-modal slds-fade-in-open">
+				<div class="slds-modal__container">
+					<header class="slds-modal__header">
+						<button onclick="{!c.hideParentLookupModal}"
+							class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+							title="Close">
+							X <span class="slds-assistive-text">Close</span>
+						</button>
+						<h2 id="modal-heading-01"
+							class="slds-text-heading_medium slds-hyphenate">Modal Header</h2>
+					</header>
+					<div class="slds-modal__content slds-p-around_medium"
+						id="modal-content-id-1">
+						<div style="display: flex; flex-direction: row; overflow: auto;"
+							class="scroll-frame">
+							<c:ESQ_LookupObjectFields aura:id="ESQ_LookupObjectFields"
+								parentFields="{!v.parentTypeFields}" />
+						</div>
+					</div>
+					<footer class="slds-modal__footer">
+						<button class="slds-button slds-button_neutral"
+							onclick="{!c.hideParentLookupModal}">Cancel</button>
+						<button class="slds-button slds-button_brand">Save</button>
+					</footer>
+				</div>
+			</section>
+			<div class="slds-backdrop slds-backdrop_open"></div>
+		</div>
+
+		<div aura:id="lookupParentModalStage" class="slds-hide"
+			style="height: 640px;">
+			<section role="dialog" tabindex="-1"
+				aria-labelledby="modal-heading-01" aria-modal="true"
+				aria-describedby="modal-content-id-1"
+				class="slds-modal slds-fade-in-open">
+				<div class="slds-modal__container">
+					<header class="slds-modal__header">
+						<button onclick="{!c.hideParentLookupModal}"
+							class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+							title="Close">
+							X <span class="slds-assistive-text">Close</span>
+						</button>
+						<h2 id="modal-heading-01"
+							class="slds-text-heading_medium slds-hyphenate">Modal Header</h2>
+					</header>
+					<div class="slds-modal__content slds-p-around_medium"
+						id="modal-content-id-1">
+						<div style="display: flex; flex-direction: row; overflow: auto;"
+							class="scroll-frame">
+							<c:ESQ_LookupObjectFields aura:id="ESQ_LookupObjectFields"
+								parentFields="{!v.parentStageFields}" />
+						</div>
+					</div>
+					<footer class="slds-modal__footer">
+						<button class="slds-button slds-button_neutral"
+							onclick="{!c.hideParentLookupModal}">Cancel</button>
+						<button class="slds-button slds-button_brand">Save</button>
+					</footer>
+				</div>
+			</section>
+			<div class="slds-backdrop slds-backdrop_open"></div>
+		</div>
+
+	</div>
+</aura:component>

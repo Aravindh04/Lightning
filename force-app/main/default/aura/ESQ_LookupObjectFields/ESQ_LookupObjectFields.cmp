@@ -1,0 +1,63 @@
+<aura:component controller="mappingsController"
+	description="ESQ_LookupObjectFields">
+
+	<aura:attribute name="parentFields" type="Map" />
+
+	<aura:registerEvent name="fieldSelected" type="c:ESQ_MappingsEvent" />
+
+	<aura:method name="clearParentLookups"
+		action="{!c.clearParentLookupsHolder}" />
+
+
+	<div class="slds-grid ">
+
+		<div class="slds-col"
+			style="border-right: 2px solid #d8dde6; width: 250px; padding-right: 0px;">
+
+			<nav class="slds-nav-vertical" aria-label="Sub page">
+				<div class="slds-nav-vertical__section">
+					<div>
+						<h2 id="entity-header"
+							class="slds-nav-vertical__title slds-text-title_caps slds-text-heading--large">{!v.title}</h2>
+					</div>
+					<ul>
+						<ui:scrollerWrapper class="scrollable scroll-frame">
+							<aura:iteration items="{!v.parentFields.list}" var="listval"
+								indexVar="listvalindex" aura:id="listOfValues">
+								<aura:if
+									isTrue="{!if(and(listval.label!=null,listval.label!='') ,true, false)}">
+									<li
+										class="{!(1==2) ? 'slds-nav-vertical__item slds-is-active':'slds-nav-vertical__item'}"
+										style="display: flex; justify-content: space-between">
+										<a class="slds-nav-vertical__action"
+										data-sobject="{!listval.relationshipParentApi}"
+										data-val="{!listval.fieldApi}"
+										data-valtype="{!listval.valueType}"
+										data-isref="{!listval.isReference}"
+										data-fieldapi="{!listval.fieldApi}"
+										data-objectname="{!listval.objectName}"
+										onclick="{!c.selectThisValue}" id="{!listvalindex}">
+											{!listval.label} </a> <aura:if
+											isTrue="{!listval.isReference=='true'}">
+											<button
+												class="slds-button slds-button--icon slds-box_xx-small slds-text-align_center slds-m-around_xx-small"
+												data-id="{!listvalindex}">
+												<lightning:Icon iconName="standard:search" size="small"
+													alternativeText="Lookup" aura:id="lookupBtn"
+													variant="inverse" />
+											</button>
+										</aura:if>
+									</li>
+								</aura:if>
+							</aura:iteration>
+						</ui:scrollerWrapper>
+					</ul>
+				</div>
+			</nav>
+		</div>
+
+		<div class="slds-col" aura:id="lookupNavigationPlaceHolder" />
+
+	</div>
+
+</aura:component>
