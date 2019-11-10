@@ -33,7 +33,11 @@
         <name>StaticResource</name>
     </types>
     <types>
-        <members>*</members>
+        <members>Account</members>
+        <members>Contact</members>
+        <members>Opportunity</members>
+        <members>Case</members>
+        <members>Task</members>
         <name>CustomObject</name>
     </types>
     <version>47.0</version>
