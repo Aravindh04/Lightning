@@ -1,0 +1,61 @@
+<aura:component controller="Generic_ServerSide_Controller"
+	extends="c:Generic_Component">
+	<aura:attribute name="selectedLookUpRecords" type="sObject[]"
+		default="[]" />
+	<aura:attribute name="sendTo" type="String[]" />
+	<aura:attribute name="mailFrom" type="String" />
+	<aura:attribute name="mailBody" type="String" />
+	<aura:attribute name="mailSubject" type="String" />
+	<div class="c-container">
+		<lightning:layout verticalAlign="start">
+			<lightning:layoutItem padding="around-small">
+				<div class="slds-p-around_xx-small">
+					<lightning:select class="fromUser" aura:Id='select' name="From"
+						label="From" required="true" onchange="{!c.userSelect}">
+						<option value="">Choose one...</option>
+						<option value="Aravindh">Aravindh</option>
+						<option value="Tejas">Tejas</option>
+						<option value="Yokesh">Yokesh</option>
+					</lightning:select>
+				</div>
+				<aura:if isTrue="{!v.mailFrom != null}">
+					<aura:if isTrue="{!(!v.sendTo.length  >0)}">
+						<div aura:Id="lookUpContainer">
+							<c:reUsableMultiSelectLookup objectAPIName="User_Master__c"
+								IconName="custom:custom47"
+								lstSelectedRecords="{!v.selectedLookUpRecords}"
+								fieldNames="Name, Email__c, Office_Mail__c"
+								label="Select Mailing users" />
+							<lightning:button variant="brand" label="Add" title="Add"
+								onclick="{!c.addTOAddress}" />
+
+						</div>
+						<aura:set attribute="else">
+							<div aura:Id="mailAddContainer" class="slds-p-around_xx-small"
+								style="max-width: 100%">
+								To&nbsp;&nbsp;&nbsp;
+								<aura:iteration items="{!v.sendTo}" var="mailId">
+									<lightning:pill label="{!mailId}"
+										onremove="{! c.handleRemove }" />
+								</aura:iteration>
+							</div>
+						</aura:set>
+
+					</aura:if>
+					<div class="slds-p-around_xx-small">
+						<lightning:input aura:id="mailbody" label="Subject"
+							value="{!v.mailSubject}" />
+					</div>
+					<div class="slds-p-around_xx-small">
+						<ui:inputTextArea aura:id="mailbody" label="Email text body"
+							value="{!v.mailBody}" />
+					</div>
+					<div class="slds-p-around_xx-small">
+						<lightning:button variant="brand" label="Send" title="Send"
+							onclick="{!c.sendMail}" />
+					</div>
+				</aura:if>
+			</lightning:layoutItem>
+		</lightning:layout>
+	</div>
+</aura:component>

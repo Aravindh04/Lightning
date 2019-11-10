@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Pay_for__c</fullName>
+    <defaultValue>&quot;User Master&quot;</defaultValue>
+    <externalId>false</externalId>
+    <label>Pay for</label>
+    <required>true</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Pair Sharing</fullName>
+                <default>false</default>
+                <label>Pair Sharing</label>
+            </value>
+            <value>
+                <fullName>User Master</fullName>
+                <default>false</default>
+                <label>User Master</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

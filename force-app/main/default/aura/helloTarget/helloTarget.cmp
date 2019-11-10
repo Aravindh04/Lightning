@@ -1,0 +1,18 @@
+<aura:component implements="lightning:isUrlAddressable" description="c:helloTarget component">
+    <aura:attribute name="firstname" type="String" />
+    <aura:attribute name="lastName" type="String" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    
+    <aura:attribute name="fields" type="List" default="['firstName','lastName']" />
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.onPageReferenceChanged}" />
+    
+    <lightning:navigation aura:id="navService" />
+    
+    <div class="container slds-box slds-p-around_x-small">
+        Hello {!v.firstname}.
+        <br/>
+        <lightning:inputName fieldsToDisplay="{!v.fields}" aura:id="nameInput" label="Name Input" />
+        <lightning:button label="Update Name" onclick="{!c.updateName}" />
+    </div>
+</aura:component>

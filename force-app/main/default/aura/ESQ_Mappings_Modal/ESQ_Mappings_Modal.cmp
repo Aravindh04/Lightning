@@ -1,0 +1,81 @@
+<aura:component>
+
+	<aura:attribute name="parentFields" type="Map" default="{}" />
+	<aura:attribute name="hideModal" type="boolean" default="false" />
+	<div aura:id="place" />
+	<aura:if isTrue="{!!v.hideModal}">
+		<div>
+			<section role="dialog" tabindex="-1"
+				aria-labelledby="modal-heading-01" aria-modal="true"
+				aria-describedby="modal-content-id-1"
+				class="slds-modal slds-fade-in-open">
+				<div class="slds-modal__container">
+					<header class="slds-modal__header">
+						<button onclick="{!c.hideParentLookupModal}"
+							class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+							title="Close">
+							X <span class="slds-assistive-text">Close</span>
+						</button>
+						<h2 id="modal-heading-01"
+							class="slds-text-heading_medium slds-hyphenate">Modal Header</h2>
+					</header>
+					<div class="slds-modal__content slds-p-around_medium"
+						id="modal-content-id-1">
+						<div style="display: flex; flex-direction: row">
+							<div class=""
+								style="border-right: 2px solid #d8dde6; width: 250px; padding-right: 0px;">
+								<nav class="slds-nav-vertical" aria-label="Sub page">
+									<div class="slds-nav-vertical__section">
+										<h2 id="entity-header"
+											class="slds-nav-vertical__title slds-text-title_caps slds-text-heading--large">{!v.title}</h2>
+										<br />
+										<ul>
+											<ui:scrollerWrapper class="scrollable">
+												<aura:iteration items="{!v.parentFields.list}" var="listval"
+													indexVar="listvalindex" aura:id="listOfValues">
+													<aura:if
+														isTrue="{!if(and(listval.label!=null,listval.label!='') ,true, false)}">
+														<li
+															class="{!(1==2) ? 'slds-nav-vertical__item slds-is-active':'slds-nav-vertical__item'}"
+															style="display: flex; justify-content: space-between">
+															<aura:if isTrue="{!listval.isReference=='true'}">
+																<a class="slds-nav-vertical__action"
+																	onclick="{!c.openModal}" id="{!listvalindex}">{!listval.label}
+																</a>
+																<button
+																	class="slds-button slds-button--icon slds-box_xx-small slds-text-align_center slds-m-around_xx-small"
+																	onclick="{!c.addSelectedValue}"
+																	data-id="{!listvalindex}">
+																	<lightning:Icon iconName="standard:search" size="small"
+																		alternativeText="Lookup" aura:id="lookupBtn"
+																		variant="inverse" />
+																</button>
+																<aura:set attribute="else">
+																	<a class="slds-nav-vertical__action"
+																		onclick="{!c.passSelectedValue}" id="{!listvalindex}">{!listval.label}
+																	</a>
+																</aura:set>
+															</aura:if>
+														</li>
+													</aura:if>
+												</aura:iteration>
+											</ui:scrollerWrapper>
+										</ul>
+									</div>
+								</nav>
+							</div>
+						</div>
+					</div>
+					<footer class="slds-modal__footer">
+						<button class="slds-button slds-button_neutral"
+							onclick="{!c.hideParentLookupModal}">Cancel</button>
+						<button class="slds-button slds-button_brand">Save</button>
+					</footer>
+				</div>
+			</section>
+			<div class="slds-backdrop slds-backdrop_open"></div>
+
+		</div>
+	</aura:if>
+
+</aura:component>

@@ -1,0 +1,6 @@
+<aura:component implements="flexipage:availableForAllPageTypes" description="c:hello component">
+    <aura:attribute name="pageReference" type="Object"/>
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    <lightning:navigation aura:id="navService"/>
+    <lightning:button label="Navigate" onclick="{!c.handleClick}"/>
+</aura:component>

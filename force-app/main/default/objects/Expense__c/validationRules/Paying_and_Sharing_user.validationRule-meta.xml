@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Paying_and_Sharing_user</fullName>
+    <active>true</active>
+    <errorConditionFormula>TEXT( Expense_on__c )=&#39;Pair&#39;  &amp;&amp; ISBLANK( TEXT( Shared_with__c ) )  ||  Member__r.Name =  TEXT( Shared_with__c )</errorConditionFormula>
+    <errorDisplayField>Shared_with__c</errorDisplayField>
+    <errorMessage>Please select a valid user. The field cannot be empty/ invalid User selection</errorMessage>
+</ValidationRule>

@@ -1,0 +1,16 @@
+.THIS .title {
+	color: #1797C0;
+	font-size: 32px;
+	font-weight: Bold;
+}
+
+.THIS .slds-box {
+	max-width: 100%;
+	color: default;
+}
+
+.THIS.all {
+	background-color: white;
+	min-height: 60%;
+	Padding: 15px;
+}

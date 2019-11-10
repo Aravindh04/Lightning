@@ -1,0 +1,25 @@
+.THIS .inputCheckbox {
+	padding: 1rem;
+}
+
+.THIS .topPad {
+	padding-top: 1.4rem;
+}
+
+.THIS .objBox {
+	padding: 0.5rem;
+	border-radius: .15rem;
+	border: 1px solid rgb(217, 219, 221);
+	height: 14rem;
+	overflow: auto;
+}
+
+.THIS tr:hover {
+	background-color: #e8f2f8;
+}
+
+.THIS tr {
+	height: 1.75rem;
+	width: 100%;
+	cursor: pointer;
+}

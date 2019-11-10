@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Amount_Validation</fullName>
+    <active>false</active>
+    <description>If Users enters More than To get amount</description>
+    <errorConditionFormula>Amount__c &gt;  Pay_to__r.To_Get__c</errorConditionFormula>
+    <errorDisplayField>Amount__c</errorDisplayField>
+    <errorMessage>Please Enter an Amount less than &quot;To Get&quot; of The Pay to user</errorMessage>
+</ValidationRule>

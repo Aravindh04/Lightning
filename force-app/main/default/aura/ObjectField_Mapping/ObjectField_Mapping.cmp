@@ -1,0 +1,1693 @@
+<!--**********************************************************************************
+@   Container type		: Markup
+@   Dependecy	 		: Standalone parent with 2 child components
+@   Registered events 	: 3
+@   Init in Use		 	: Yes
+@   Extends/Extensible	: No
+@ 	Number of Attributes: 43
+@ 	Number of handlers	: 4
+@   Description 		: To create a Generic mapping template for reporting and Stat
+@ 	Copy rights @		: 
+****************************************************************************************-->
+
+
+<aura:component controller="ObjectField_MappingClass"
+	implements="force:appHostable,flexipage:availableForAllPageTypes"
+	access="global">
+
+	<aura:attribute name="selectTab" type="String" default="caseTypeSel"
+		description="To display the selected Tab" />
+
+	<aura:attribute name="selectMasterObject" type="Object"
+		default="{label : '', value :''}"
+		description="To display the Selected Master Object" />
+
+	<aura:attribute name="stdOptions" type="Map" />
+
+	<aura:attribute name="typeOptions" type="List" default=""
+		description="To store the Type options " />
+	<!--[{label : 'Hip Implant' ,value : 'Hip Implant'},{label : 'Automobile Accident' ,value : 'Automobile Accident'},{label : 'Immigration' ,value : 'Immigration'}]-->
+	<aura:attribute name="stageOptions" type="List" default=""
+		description="To store the Stage options " />
+	<!--[{label : 'Court House' ,value : 'Court House'},{label : 'Settlement' ,value : 'Settlement'},{label : 'Documentation' ,value : 'Documentation'}]-->
+
+
+	<!--To have a temporary list of all field values available for selection-->
+	<aura:attribute name="tempTypeOptions" type="List" default="" />
+	<aura:attribute name="tempStageOptions" type="List" default="" />
+
+	<!--To Store the checked values to be moved to the selected-->
+	<aura:attribute name="singleEvent" type="List" default="[]" />
+	<aura:attribute name="massTort" type="List" default="[]" />
+	<aura:attribute name="classAction" type="List" default="[]" />
+
+	<!--has Selected Values-->
+	<aura:attribute name="singleEventFields" type="List" default="[]" />
+	<aura:attribute name="massTortFields" type="List" default="[]" />
+	<aura:attribute name="classActionFields" type="List" default="[]" />
+
+	<!--To Store the checked values to be moved back to the availbale or Temp options-->
+	<aura:attribute name="singleEventSelected" type="List" default="[]" />
+	<aura:attribute name="massTortSelected" type="List" default="[]" />
+	<aura:attribute name="classActionSelected" type="List" default="[]" />
+
+	<!--To Store the checked values to be moved to the selected-->
+	<aura:attribute name="stageA" type="List" default="[]" />
+	<aura:attribute name="stageB" type="List" default="[]" />
+	<aura:attribute name="stageC" type="List" default="[]" />
+	<aura:attribute name="stageD" type="List" default="[]" />
+
+	<!--has Selected Values-->
+	<aura:attribute name="stageAFields" type="List" default="[]" />
+	<aura:attribute name="stageBFields" type="List" default="[]" />
+	<aura:attribute name="stageCFields" type="List" default="[]" />
+	<aura:attribute name="stageDFields" type="List" default="[]" />
+
+	<!--To Store the checked values to be moved back to the availbale or Temp options-->
+	<aura:attribute name="stageASelected" type="List" default="[]" />
+	<aura:attribute name="stageBSelected" type="List" default="[]" />
+	<aura:attribute name="stageCSelected" type="List" default="[]" />
+	<aura:attribute name="stageDSelected" type="List" default="[]" />
+
+
+
+	<aura:attribute name="allValues" type="Map" default="{}"
+		description="Contains all in the Map, Generic JSON to be used in the futire" />
+
+	<!--Standard Case Type and Stage-->
+	<aura:attribute name="typeFields" type="Map" default="{}"
+		description="Contains Type field Mapping" />
+	<aura:attribute name="stageFields" type="Map" default="{}"
+		description="Contains Stage field Mapping" />
+
+	<!--The field of Data type Text area, Currency, Reference, Date-->
+	<aura:attribute name="otherFieldsTypes" type="List" default="" />
+
+	<!--To store the user selection for Each field-->
+	<aura:attribute name="totValueField" type="Object" default="{}" />
+	<aura:attribute name="closedDateFields" type="Object" default="{}" />
+	<aura:attribute name="grossFields" type="Object" default="{}" />
+	<aura:attribute name="netFields" type="Object" default="{}" />
+	<aura:attribute name="retainerFields" type="Object" default="{}" />
+	<aura:attribute name="caseIndexFields" type="Object" default="{}" />
+	<aura:attribute name="caseNameFields" type="Object" default="{}" />
+	<aura:attribute name="pctFeeFields" type="Object" default="{}" />
+	<aura:attribute name="dollarFeeFields" type="Object" default="{}" />
+	<aura:attribute name="venueFields" type="Object" default="{}" />
+
+	<!--Contains list of all the available sObjects in the Org, fetched from doInit-->
+	<aura:attribute name="sObjects" type="List"
+		default="[{label : 'Matter', value : 'Matter__c'}]" />
+
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"
+		description="Loads initially without any user trigger controller events" />
+
+	<!--Registered event change when an Object is Changed-->
+	<aura:handler name="objectSelected" event="c:ObjectField_Mapping_Event"
+		action="{!c.onMasObjChange}" />
+
+	<!--Registered event when case type of stage values are selected-->
+	<aura:handler name="fieldSelected" event="c:FieldParent_Mapping_Event"
+		action="{!c.selectThisParentField}" />
+
+	<!--Registered event when a field mapping values are selected-->
+	<aura:handler name="otherFieldSelected"
+		event="c:ObjectField_OtherFields_Event" action="{!c.setOtherFields}" />
+
+	<!--Outer body-->
+	<lightning:layout class="slds-box title" multipleRows="true">
+		<lightning:layoutItem size="12" smallDeviceSize="12"
+			mediumDeviceSize="12" largeDeviceSize="12">
+
+			<!--Title of The page-->
+			<lightning:layout>
+				<lightning:layoutItem flexibility="auto">
+					<div class="page-section page-header slds-p-around_medium ">
+						<h2 class="slds-text-heading--label slds-text-heading_x-large">Data
+							Mapping tool</h2>
+					</div>
+
+					<!--help text area-->
+					<lightning:layout multipleRows="true">
+						<lightning:layoutItem class="" size="12" smallDeviceSize="12"
+							mediumDeviceSize="12" largeDeviceSize="12"
+							padding="horizontal-small">
+							<lightning:layout class="slds-box subTitle" multipleRows="true">
+								<lightning:layoutItem size="12" smallDeviceSize="12"
+									mediumDeviceSize="12" largeDeviceSize="4">
+									<lightning:layout>
+										<lightning:layoutItem>
+											<h1 class="slds-text-heading--label slds-text-heading_medium">Help
+												text</h1>
+                                            Please select the Object and Map with the respective standard fields
+                                        </lightning:layoutItem>
+									</lightning:layout>
+								</lightning:layoutItem>
+							</lightning:layout>
+
+							<!--Object selection-->
+							<div class="slds-box subTitle">
+								<h1 class="slds-text-heading--label">Object Mapping</h1>
+								<lightning:layout multipleRows="true" horizontalAlign="center">
+									<lightning:layoutItem size="12" smallDeviceSize="12"
+										mediumDeviceSize="12" largeDeviceSize="6"
+										padding="around-small">
+										<div style="position: relative">
+											<!--<lightning:select aura:id="masterObj" disabled="" class="masterSelect" aura:Id="sObjName" name="Object" label="Master Object" onchange="{!c.onMasObjChange}">
+                                                <aura:iteration items="{!v.sObjects}" var="objName">
+                                                    <option title="{!objName.value}" value="{!objName.value}">{!objName.label}</option>
+                                                </aura:iteration>
+                                            </lightning:select>-->
+											<lightning:input aura:id="masterObj" disabled=""
+												class="masterSelect" placeholder="Select Object"
+												aura:Id="sObjName" name="Object" label="Master Object"
+												value="{!v.selectMasterObject.label}"
+												onclick="{!c.handleObjSel}" />
+											<lightning:helptext class="helpText"
+												content="Select the Master Object" />
+											<lightning:button class="masterObj"
+												aura:id="masterObjConfirm" variant="brand" disabled="false"
+												label="Confirm" onclick="{!c.confirmOppSelction}" />
+											<lightning:button class="masterObj" aura:id="masterObjChange"
+												disabled="true" label="Change" onclick="{!c.changeOppValue}" />
+										</div>
+									</lightning:layoutItem>
+								</lightning:layout>
+							</div>
+
+							<!--Open the tab section only when a sObject has a value-->
+							<aura:if isTrue="{!v.selectMasterObject != null}">
+								<div class="formSection">
+
+									<!--Tab view for Each user selection-->
+									<form aura:id="tabForm" class="slds-form_stacked">
+										<lightning:tabset variant="scoped"
+											selectedTabId="{!v.selectTab}">
+
+											<lightning:tab label="Case Type" id="caseTypeSel">
+												<lightning:layout multipleRows="true">
+													<lightning:layoutItem size="12" smallDeviceSize="12"
+														mediumDeviceSize="12" largeDeviceSize="12">
+														<fieldset
+															class="slds-box slds-theme_default slds-container_x-large">
+															<legend id="newexpenseform"
+																class="slds-text-heading_medium slds-p-vertical_small">
+																Case Type </legend>
+
+															<form class="slds-form_stacked">
+																<div class="container">
+																	<lightning:layout multipleRows="true" class="padding">
+																		<lightning:layoutItem size="6">
+																			<!--<lightning:select disabled="false" aura:Id="caseTypeFld" class="caseSelect" name="Object" variant="label-hidden" onchange="{!c.onObjChange}">
+                                                                                    <aura:iteration items="{!v.typeFields.list}" var="objName">
+                                                                                        <option value="{!objName.value}">{!objName.label}</option>
+                                                                                    </aura:iteration>
+                                                                                </lightning:select>-->
+																			<lightning:input disabled="false"
+																				aura:Id="caseTypeFld" class="caseSelect"
+																				name="Object" label="Case Type Field"
+																				value="{!v.typeFields.traverse}"
+																				onclick="{!c.unHideTypeModal}" />
+																			<lightning:button class="caseTypeFld"
+																				aura:id="caseTypeFldConfirm" disabled="false"
+																				label="Confirm" onclick="{!c.confirmCaseType}"
+																				variant="brand" />
+																			<lightning:button class="caseTypeFld"
+																				aura:id="caseTypeFldChange" disabled="true"
+																				label="Change" onclick="{!c.changeCaseType}" />
+																		</lightning:layoutItem>
+																	</lightning:layout>
+
+																	<!--Field values of Type mapping eg. mapping single event with the value obtained from the database-->
+																	<lightning:layout multipleRows="true">
+
+																		<!--Standard field section of case type-->
+																		<lightning:layoutItem size="3">
+																			<lightning:verticalNavigation class="boxAdjust1"
+																				shaded="true"
+																				onbeforeselect="{!c.handleStdTypeSelection}">
+																				<lightning:verticalNavigationSection
+																					label="ESQ Case Type">
+																					<aura:iteration items="{!v.stdOptions.types}"
+																						var="val">
+																						<lightning:verticalNavigationItem
+																							label="{!val.label}" name="{!val.value}" />
+																					</aura:iteration>
+																				</lightning:verticalNavigationSection>
+																			</lightning:verticalNavigation>
+																		</lightning:layoutItem>
+
+																		<!--Dual list box section of case type-->
+																		<lightning:layoutItem size="6" class="boxAdjust2">
+																			<div>
+																				<!--Single Event Dual list box-->
+																				<div aura:id="singleEvent" class="slds-hide">
+																					<div class="slds-form-element">
+																						<div
+																							class="slds-form-element__label slds-form-element__legend slds-text-title_caps">
+																							Select Single Event Fields</div>
+																						<div class="slds-dueling-list">
+																							<div class="slds-dueling-list__column">
+																								<span class="slds-form-element__label">Available</span>
+																								<div class="slds-dueling-list__options">
+																									<ol class="slds-listbox slds-listbox_vertical">
+																										<aura:iteration items="{!v.tempTypeOptions}"
+																											var="val" indexVar="index">
+																											<li class="slds-listbox__item">
+																												<div
+																													class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_inline">
+																													<span
+																														class="slds-media__body slds-truncate">
+																														<div class="slds-form-element__control"
+																															id="numeric">
+																															<span class="slds-checkbox"> <input
+																																type="checkbox"
+																																id="{!val.value+' single'}"
+																																value="{!val.value}"
+																																data-index="{!val.index}"
+																																data-selection="available"
+																																data-value="{!val.value}"
+																																data-selType="type"
+																																data-type="singleEvent"
+																																onclick="{!c.getValIndex}" /> <label
+																																class="slds-checkbox__label"
+																																for="{!val.value+' single'}"> <span
+																																	class="slds-checkbox_faux"></span> <span
+																																	class="slds-form-element__label">{!val.value}</span>
+																															</label>
+																															</span>
+																														</div>
+																													</span>
+																												</div>
+																											</li>
+																										</aura:iteration>
+																									</ol>
+																								</div>
+																							</div>
+																							<div class="slds-dueling-list__column">
+																								<lightning:buttonIcon iconName="utility:right"
+																									value="Type" alternativeText="right"
+																									class="singleEvent"
+																									onclick="{!c.addToTypeList}" />
+																								<lightning:buttonIcon iconName="utility:left"
+																									value="Type" alternativeText="left"
+																									class="singleEvent"
+																									onclick="{!c.removeFromList}" />
+																							</div>
+																							<div class="slds-dueling-list__column">
+																								<span class="slds-form-element__label">Selected</span>
+																								<div class="slds-dueling-list__options">
+																									<ol class="slds-listbox slds-listbox_vertical">
+																										<aura:iteration items="{!v.singleEventFields}"
+																											var="val" indexVar="index">
+																											<li class="slds-listbox__item">
+																												<div
+																													class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_inline">
+																													<span
+																														class="slds-media__body slds-truncate">
+																														<div class="slds-form-element__control"
+																															id="numeric">
+																															<span class="slds-checkbox"> <input
+																																type="checkbox"
+																																id="{!val.value+' single'}"
+																																value="{!val.value}"
+																																data-index="{!val.position}"
+																																data-value="{!val.value}"
+																																data-selType="type"
+																																data-selection="selected"
+																																data-type="singleEvent"
+																																onclick="{!c.getValIndex}" /> <label
+																																class="slds-checkbox__label"
+																																for="{!val.value+' single'}"> <span
+																																	class="slds-checkbox_faux"></span> <span
+																																	class="slds-form-element__label">{!val.value}</span>
+																															</label>
+																															</span>
+																														</div>
+																													</span>
+																												</div>
+																											</li>
+																										</aura:iteration>
+																									</ol>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+
+																				<!--massTort Dual list box-->
+																				<div aura:id="massTort" class="slds-hide">
+																					<div class="slds-form-element">
+																						<div
+																							class="slds-form-element__label slds-form-element__legend slds-text-title_caps">
+																							Select Mass Tort Fields</div>
+																						<div class="slds-dueling-list">
+																							<div class="slds-dueling-list__column">
+																								<span class="slds-form-element__label">Available</span>
+																								<div class="slds-dueling-list__options">
+																									<ol class="slds-listbox slds-listbox_vertical">
+																										<aura:iteration items="{!v.tempTypeOptions}"
+																											var="val" indexVar="index">
+																											<li class="slds-listbox__item">
+																												<div
+																													class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_inline">
+																													<span
+																														class="slds-media__body slds-truncate">
+																														<div class="slds-form-element__control"
+																															id="numeric">
+																															<span class="slds-checkbox"> <input
+																																type="checkbox"
+																																id="{!val.value+' mass'}"
+																																value="{!val.value}"
+																																data-index="{!val.index}"
+																																data-value="{!val.value}"
+																																data-selType="type"
+																																data-selection="available"
+																																data-type="massTort"
+																																onclick="{!c.getValIndex}" /> <label
+																																class="slds-checkbox__label"
+																																for="{!val.value+' mass'}"> <span
+																																	class="slds-checkbox_faux"></span> <span
+																																	class="slds-form-element__label">{!val.value}</span>
+																															</label>
+																															</span>
+																														</div>
+																													</span>
+																												</div>
+																											</li>
+																										</aura:iteration>
+																									</ol>
+																								</div>
+																							</div>
+																							<div class="slds-dueling-list__column">
+																								<lightning:buttonIcon iconName="utility:right"
+																									value="Type" alternativeText="right"
+																									class="massTort" onclick="{!c.addToTypeList}" />
+																								<lightning:buttonIcon iconName="utility:left"
+																									value="Type" alternativeText="left"
+																									class="massTort" onclick="{!c.removeFromList}" />
+																							</div>
+																							<div class="slds-dueling-list__column">
+																								<span class="slds-form-element__label">Selected</span>
+																								<div class="slds-dueling-list__options">
+																									<ol class="slds-listbox slds-listbox_vertical">
+																										<aura:iteration items="{!v.massTortFields}"
+																											var="val" indexVar="index">
+																											<li class="slds-listbox__item">
+																												<div
+																													class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_inline">
+																													<span
+																														class="slds-media__body slds-truncate">
+																														<div class="slds-form-element__control"
+																															id="numeric">
+																															<span class="slds-checkbox"> <input
+																																type="checkbox"
+																																id="{!val.value+' mass'}"
+																																value="{!val.value}"
+																																data-index="{!val.position}"
+																																data-value="{!val.value}"
+																																data-selType="type"
+																																data-selection="selected"
+																																data-type="massTort"
+																																onclick="{!c.getValIndex}" /> <label
+																																class="slds-checkbox__label"
+																																for="{!val.value+' mass'}"> <span
+																																	class="slds-checkbox_faux"></span> <span
+																																	class="slds-form-element__label">{!val.value}</span>
+																															</label>
+																															</span>
+																														</div>
+																													</span>
+																												</div>
+																											</li>
+																										</aura:iteration>
+																									</ol>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+
+																				<!--Class action section of dual list-->
+																				<div aura:id="classAction" class="slds-hide">
+																					<div class="slds-form-element">
+																						<div
+																							class="slds-form-element__label slds-form-element__legend slds-text-title_caps">
+																							Select Class Action Fields</div>
+																						<div class="slds-dueling-list">
+																							<div class="slds-dueling-list__column">
+																								<span class="slds-form-element__label">Available</span>
+																								<div class="slds-dueling-list__options">
+																									<ol class="slds-listbox slds-listbox_vertical">
+																										<aura:iteration items="{!v.tempTypeOptions}"
+																											var="val" indexVar="index">
+																											<li class="slds-listbox__item">
+																												<div
+																													class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_inline">
+																													<span
+																														class="slds-media__body slds-truncate">
+																														<div class="slds-form-element__control"
+																															id="numeric">
+																															<span class="slds-checkbox"> <input
+																																type="checkbox"
+																																id="{!val.value+' class'}"
+																																value="{!val.value}"
+																																data-index="{!val.index}"
+																																data-value="{!val.value}"
+																																data-selType="type"
+																																data-selection="available"
+																																data-type="classAction"
+																																onclick="{!c.getValIndex}" /> <label
+																																class="slds-checkbox__label"
+																																for="{!val.value+' class'}"> <span
+																																	class="slds-checkbox_faux"></span> <span
+																																	class="slds-form-element__label">{!val.value}</span>
+																															</label>
+																															</span>
+																														</div>
+																													</span>
+																												</div>
+																											</li>
+																										</aura:iteration>
+																									</ol>
+																								</div>
+																							</div>
+																							<div class="slds-dueling-list__column">
+																								<lightning:buttonIcon iconName="utility:right"
+																									value="Type" alternativeText="right"
+																									class="classAction"
+																									onclick="{!c.addToTypeList}" />
+																								<lightning:buttonIcon iconName="utility:left"
+																									value="Type" alternativeText="left"
+																									class="classAction"
+																									onclick="{!c.removeFromList}" />
+																							</div>
+																							<div class="slds-dueling-list__column">
+																								<span class="slds-form-element__label">Selected</span>
+																								<div class="slds-dueling-list__options">
+																									<ol class="slds-listbox slds-listbox_vertical">
+																										<aura:iteration items="{!v.classActionFields}"
+																											var="val" indexVar="index">
+																											<li class="slds-listbox__item">
+																												<div
+																													class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_inline">
+																													<span
+																														class="slds-media__body slds-truncate">
+																														<div class="slds-form-element__control"
+																															id="numeric">
+																															<span class="slds-checkbox"> <input
+																																type="checkbox" id="{!val.value}"
+																																value="{!val.value}"
+																																data-index="{!val.position}"
+																																data-value="{!val.value}"
+																																data-selType="type"
+																																data-selection="selected"
+																																data-type="classAction"
+																																onclick="{!c.getValIndex}" /> <label
+																																class="slds-checkbox__label"
+																																for="{!val.value}"> <span
+																																	class="slds-checkbox_faux"></span> <span
+																																	class="slds-form-element__label">{!val.value}</span>
+																															</label>
+																															</span>
+																														</div>
+																													</span>
+																												</div>
+																											</li>
+																										</aura:iteration>
+																									</ol>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+
+																				<!--
+                                                                            <lightning:dualListbox aura:id="" class="slds-hide"
+                                                                                                   label= "Select Single Event Fields" 
+                                                                                                   sourceLabel="Available" selectedLabel="Selected" 
+                                                                                                   options="{!v.typeOptions}"
+                                                                                                   onchange="{! c.handleChange }"/>
+                                                                            <lightning:dualListbox aura:id="massTort" class="slds-hide"
+                                                                                                   label= "Select Mass Tort Fields" 
+                                                                                                   sourceLabel="Available" selectedLabel="Selected" 
+                                                                                                   options="{!v.typeOptions}"
+                                                                                                   onchange="{! c.handleChange }"/>
+                                                                            <lightning:dualListbox aura:id="classAction" class="slds-hide"
+                                                                                                   label= "Select Class Action Fields" 
+                                                                                                   sourceLabel="Available" selectedLabel="Selected" 
+                                                                                                   options="{!v.typeOptions}"
+                                                                                                   onchange="{! c.handleChange }"/>-->
+																			</div>
+
+																			<!--If none selected from vertical Nav item-->
+																			<div aura:id="typeNull"
+																				class="slds-align_absolute-center"
+																				style="height: 20rem">Please select a Standard
+																				field</div>
+																		</lightning:layoutItem>
+																		<lightning:layoutItem size="12" padding="around-small">
+																			<lightning:button class="caseTypeMap"
+																				iconName="utility:right" iconPosition="right"
+																				aura:id="submitType" disabled="true" label="Next"
+																				onclick="{!c.submitTypeAction}" variant="brand" />
+																			<lightning:button class="caseTypeMap rtMar"
+																				aura:id="mapTypeId" value="Type" label="Map"
+																				onclick="{!c.mapType}" variant="success" />
+																			<lightning:button class="caseTypeMap rtMar slds-hide"
+																				aura:id="unmapTypeId" label="Unmap"
+																				onclick="{!c.unmapType}" variant="destructive" />
+																		</lightning:layoutItem>
+																	</lightning:layout>
+																</div>
+															</form>
+														</fieldset>
+													</lightning:layoutItem>
+												</lightning:layout>
+											</lightning:tab>
+
+											<!--case Stage values mapping tab-->
+											<lightning:tab label="Case Stage" id="caseStageSel">
+												<lightning:layout multipleRows="true">
+													<lightning:layoutItem size="12" smallDeviceSize="12"
+														mediumDeviceSize="12" largeDeviceSize="12">
+														<fieldset
+															class="slds-box slds-theme_default slds-container_x-large">
+															<legend id="newexpenseform"
+																class="slds-text-heading_medium slds-p-vertical_small">
+																Case Stage </legend>
+
+															<form class="slds-form_stacked">
+																<div class="container">
+																	<lightning:layout multipleRows="true" class="padding">
+																		<lightning:layoutItem size="6">
+																			<lightning:input disabled="false"
+																				aura:Id="stageTypeFld" class="caseSelect"
+																				name="Object" label="Case Stage Field"
+																				value="{!v.stageFields.traverse}"
+																				onclick="{!c.unHideStageModal}" />
+																			<lightning:button class="stageTypeFld"
+																				aura:id="stageTypeFldConfirm" disabled="false"
+																				label="Confirm" onclick="{!c.confirmCaseStage}"
+																				variant="brand" />
+																			<lightning:button class="stageTypeFld"
+																				aura:id="stageTypeFldChange" disabled="true"
+																				label="Change" onclick="{!c.changeCaseStage}" />
+																		</lightning:layoutItem>
+																	</lightning:layout>
+
+																	<!--Left Navigation items like A, B, C and D-->
+																	<lightning:layout multipleRows="true">
+																		<lightning:layoutItem size="3">
+																			<lightning:verticalNavigation class="boxAdjust1"
+																				shaded="true"
+																				onbeforeselect="{!c.handleStdStageSelection}">
+																				<lightning:verticalNavigationSection
+																					label="ESQ Case Stage">
+																					<aura:iteration items="{!v.stdOptions.stages}"
+																						var="val">
+																						<lightning:verticalNavigationItem
+																							label="{!val.label}" name="{!val.value}" />
+																					</aura:iteration>
+																				</lightning:verticalNavigationSection>
+																			</lightning:verticalNavigation>
+																		</lightning:layoutItem>
+
+																		<!--Dual list for case Stage mapping-->
+																		<lightning:layoutItem size="6" class="boxAdjust2">
+																			<div>
+																				<div aura:id="stageA" class="slds-hide">
+																					<div class="slds-form-element">
+																						<div
+																							class="slds-form-element__label slds-form-element__legend slds-text-title_caps">
+																							Select STAGE A Fields</div>
+																						<div class="slds-dueling-list">
+																							<div class="slds-dueling-list__column">
+																								<span class="slds-form-element__label">Available</span>
+																								<div class="slds-dueling-list__options">
+																									<ol class="slds-listbox slds-listbox_vertical">
+																										<aura:iteration items="{!v.tempStageOptions}"
+																											var="val" indexVar="index">
+																											<li class="slds-listbox__item">
+																												<div
+																													class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_inline">
+																													<span
+																														class="slds-media__body slds-truncate">
+																														<div class="slds-form-element__control"
+																															id="numeric">
+																															<span class="slds-checkbox"> <input
+																																type="checkbox"
+																																id="{!val.value+' stageA'}"
+																																value="{!val.value}"
+																																data-index="{!val.index}"
+																																data-value="{!val.value}"
+																																data-selType="stage"
+																																data-selection="available"
+																																data-type="stageA"
+																																onclick="{!c.getValIndex}" /> <label
+																																class="slds-checkbox__label"
+																																for="{!val.value+' stageA'}"> <span
+																																	class="slds-checkbox_faux"></span> <span
+																																	class="slds-form-element__label">{!val.value}</span>
+																															</label>
+																															</span>
+																														</div>
+																													</span>
+																												</div>
+																											</li>
+																										</aura:iteration>
+																									</ol>
+																								</div>
+																							</div>
+																							<div class="slds-dueling-list__column">
+																								<lightning:buttonIcon iconName="utility:right"
+																									value="Stage" alternativeText="right"
+																									class="stageA" onclick="{!c.addToStageList}" />
+																								<lightning:buttonIcon iconName="utility:left"
+																									value="Stage" alternativeText="left"
+																									class="stageA" onclick="{!c.removeFromList}" />
+																							</div>
+																							<div class="slds-dueling-list__column">
+																								<span class="slds-form-element__label">Selected</span>
+																								<div class="slds-dueling-list__options">
+																									<ol class="slds-listbox slds-listbox_vertical">
+																										<aura:iteration items="{!v.stageAFields}"
+																											var="val" indexVar="index">
+																											<li class="slds-listbox__item">
+																												<div
+																													class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_inline">
+																													<span
+																														class="slds-media__body slds-truncate">
+																														<div class="slds-form-element__control"
+																															id="numeric">
+																															<span class="slds-checkbox"> <input
+																																type="checkbox" id="{!val.value}"
+																																value="{!val.value}"
+																																data-index="{!val.position}"
+																																data-value="{!val.value}"
+																																data-selType="stage"
+																																data-selection="selected"
+																																data-type="stageA"
+																																onclick="{!c.getValIndex}" /> <label
+																																class="slds-checkbox__label"
+																																for="{!val.value}"> <span
+																																	class="slds-checkbox_faux"></span> <span
+																																	class="slds-form-element__label">{!val.value}</span>
+																															</label>
+																															</span>
+																														</div>
+																													</span>
+																												</div>
+																											</li>
+																										</aura:iteration>
+																									</ol>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+																				<div aura:id="stageB" class="slds-hide">
+																					<div class="slds-form-element">
+																						<div
+																							class="slds-form-element__label slds-form-element__legend slds-text-title_caps">
+																							Select STAGE B Fields</div>
+																						<div class="slds-dueling-list">
+																							<div class="slds-dueling-list__column">
+																								<span class="slds-form-element__label">Available</span>
+																								<div class="slds-dueling-list__options">
+																									<ol class="slds-listbox slds-listbox_vertical">
+																										<aura:iteration items="{!v.tempStageOptions}"
+																											var="val" indexVar="index">
+																											<li class="slds-listbox__item">
+																												<div
+																													class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_inline">
+																													<span
+																														class="slds-media__body slds-truncate">
+																														<div class="slds-form-element__control"
+																															id="numeric">
+																															<span class="slds-checkbox"> <input
+																																type="checkbox"
+																																id="{!val.value+' stageB'}"
+																																value="{!val.value}"
+																																data-index="{!val.index}"
+																																data-value="{!val.value}"
+																																data-selType="stage"
+																																data-selection="available"
+																																data-type="stageB"
+																																onclick="{!c.getValIndex}" /> <label
+																																class="slds-checkbox__label"
+																																for="{!val.value+' stageB'}"> <span
+																																	class="slds-checkbox_faux"></span> <span
+																																	class="slds-form-element__label">{!val.value}</span>
+																															</label>
+																															</span>
+																														</div>
+																													</span>
+																												</div>
+																											</li>
+																										</aura:iteration>
+																									</ol>
+																								</div>
+																							</div>
+																							<div class="slds-dueling-list__column">
+																								<lightning:buttonIcon iconName="utility:right"
+																									value="Stage" alternativeText="right"
+																									class="stageB" onclick="{!c.addToStageList}" />
+																								<lightning:buttonIcon iconName="utility:left"
+																									value="Stage" alternativeText="left"
+																									class="stageB" onclick="{!c.removeFromList}" />
+																							</div>
+																							<div class="slds-dueling-list__column">
+																								<span class="slds-form-element__label">Selected</span>
+																								<div class="slds-dueling-list__options">
+																									<ol class="slds-listbox slds-listbox_vertical">
+																										<aura:iteration items="{!v.stageBFields}"
+																											var="val" indexVar="index">
+																											<li class="slds-listbox__item">
+																												<div
+																													class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_inline">
+																													<span
+																														class="slds-media__body slds-truncate">
+																														<div class="slds-form-element__control"
+																															id="numeric">
+																															<span class="slds-checkbox"> <input
+																																type="checkbox" id="{!val.value}"
+																																value="{!val.value}"
+																																data-index="{!val.position}"
+																																data-value="{!val.value}"
+																																data-selType="stage"
+																																data-selection="selected"
+																																data-type="stageB"
+																																onclick="{!c.getValIndex}" /> <label
+																																class="slds-checkbox__label"
+																																for="{!val.value}"> <span
+																																	class="slds-checkbox_faux"></span> <span
+																																	class="slds-form-element__label">{!val.value}</span>
+																															</label>
+																															</span>
+																														</div>
+																													</span>
+																												</div>
+																											</li>
+																										</aura:iteration>
+																									</ol>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+																				<div aura:id="stageC" class="slds-hide">
+																					<div class="slds-form-element">
+																						<div
+																							class="slds-form-element__label slds-form-element__legend slds-text-title_caps">
+																							Select STAGE C Fields</div>
+																						<div class="slds-dueling-list">
+																							<div class="slds-dueling-list__column">
+																								<span class="slds-form-element__label">Available</span>
+																								<div class="slds-dueling-list__options">
+																									<ol class="slds-listbox slds-listbox_vertical">
+																										<aura:iteration items="{!v.tempStageOptions}"
+																											var="val" indexVar="index">
+																											<li class="slds-listbox__item">
+																												<div
+																													class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_inline">
+																													<span
+																														class="slds-media__body slds-truncate">
+																														<div class="slds-form-element__control"
+																															id="numeric">
+																															<span class="slds-checkbox"> <input
+																																type="checkbox"
+																																id="{!val.value+' stageC'}"
+																																value="{!val.value}"
+																																data-index="{!val.index}"
+																																data-value="{!val.value}"
+																																data-selType="stage"
+																																data-selection="available"
+																																data-type="stageC"
+																																onclick="{!c.getValIndex}" /> <label
+																																class="slds-checkbox__label"
+																																for="{!val.value+' stageC'}"> <span
+																																	class="slds-checkbox_faux"></span> <span
+																																	class="slds-form-element__label">{!val.value}</span>
+																															</label>
+																															</span>
+																														</div>
+																													</span>
+																												</div>
+																											</li>
+																										</aura:iteration>
+																									</ol>
+																								</div>
+																							</div>
+																							<div class="slds-dueling-list__column">
+																								<lightning:buttonIcon iconName="utility:right"
+																									value="Stage" alternativeText="right"
+																									class="stageC" onclick="{!c.addToStageList}" />
+																								<lightning:buttonIcon iconName="utility:left"
+																									value="Stage" alternativeText="left"
+																									class="stageC" onclick="{!c.removeFromList}" />
+																							</div>
+																							<div class="slds-dueling-list__column">
+																								<span class="slds-form-element__label">Selected</span>
+																								<div class="slds-dueling-list__options">
+																									<ol class="slds-listbox slds-listbox_vertical">
+																										<aura:iteration items="{!v.stageCFields}"
+																											var="val" indexVar="index">
+																											<li class="slds-listbox__item">
+																												<div
+																													class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_inline">
+																													<span
+																														class="slds-media__body slds-truncate">
+																														<div class="slds-form-element__control"
+																															id="numeric">
+																															<span class="slds-checkbox"> <input
+																																type="checkbox" id="{!val.value}"
+																																value="{!val.value}"
+																																data-index="{!val.position}"
+																																data-value="{!val.value}"
+																																data-selType="stage"
+																																data-selection="selected"
+																																data-type="stageC"
+																																onclick="{!c.getValIndex}" /> <label
+																																class="slds-checkbox__label"
+																																for="{!val.value}"> <span
+																																	class="slds-checkbox_faux"></span> <span
+																																	class="slds-form-element__label">{!val.value}</span>
+																															</label>
+																															</span>
+																														</div>
+																													</span>
+																												</div>
+																											</li>
+																										</aura:iteration>
+																									</ol>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+																				<div aura:id="stageD" class="slds-hide">
+																					<div class="slds-form-element">
+																						<div
+																							class="slds-form-element__label slds-form-element__legend slds-text-title_caps">
+																							Select STAGE D Fields</div>
+																						<div class="slds-dueling-list">
+																							<div class="slds-dueling-list__column">
+																								<span class="slds-form-element__label">Available</span>
+																								<div class="slds-dueling-list__options">
+																									<ol class="slds-listbox slds-listbox_vertical">
+																										<aura:iteration items="{!v.tempStageOptions}"
+																											var="val" indexVar="index">
+																											<li class="slds-listbox__item">
+																												<div
+																													class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_inline">
+																													<span
+																														class="slds-media__body slds-truncate">
+																														<div class="slds-form-element__control"
+																															id="numeric">
+																															<span class="slds-checkbox"> <input
+																																type="checkbox"
+																																id="{!val.value+' stageD'}"
+																																value="{!val.value}"
+																																data-index="{!val.index}"
+																																data-value="{!val.value}"
+																																data-selType="stage"
+																																data-selection="available"
+																																data-type="stageD"
+																																onclick="{!c.getValIndex}" /> <label
+																																class="slds-checkbox__label"
+																																for="{!val.value+' stageD'}"> <span
+																																	class="slds-checkbox_faux"></span> <span
+																																	class="slds-form-element__label">{!val.value}</span>
+																															</label>
+																															</span>
+																														</div>
+																													</span>
+																												</div>
+																											</li>
+																										</aura:iteration>
+																									</ol>
+																								</div>
+																							</div>
+																							<div class="slds-dueling-list__column">
+																								<lightning:buttonIcon iconName="utility:right"
+																									value="Stage" alternativeText="right"
+																									class="stageD" onclick="{!c.addToStageList}" />
+																								<lightning:buttonIcon iconName="utility:left"
+																									value="Stage" alternativeText="left"
+																									class="stageD" onclick="{!c.removeFromList}" />
+																							</div>
+																							<div class="slds-dueling-list__column">
+																								<span class="slds-form-element__label">Selected</span>
+																								<div class="slds-dueling-list__options">
+																									<ol class="slds-listbox slds-listbox_vertical">
+																										<aura:iteration items="{!v.stageDFields}"
+																											var="val" indexVar="index">
+																											<li class="slds-listbox__item">
+																												<div
+																													class="slds-listbox__option slds-listbox__option_plain slds-media slds-media_small slds-media_inline">
+																													<span
+																														class="slds-media__body slds-truncate">
+																														<div class="slds-form-element__control"
+																															id="numeric">
+																															<span class="slds-checkbox"> <input
+																																type="checkbox" id="{!val.value}"
+																																value="{!val.value}"
+																																data-index="{!val.position}"
+																																data-value="{!val.value}"
+																																data-selType="stage"
+																																data-selection="selected"
+																																data-type="stageD"
+																																onclick="{!c.getValIndex}" /> <label
+																																class="slds-checkbox__label"
+																																for="{!val.value}"> <span
+																																	class="slds-checkbox_faux"></span> <span
+																																	class="slds-form-element__label">{!val.value}</span>
+																															</label>
+																															</span>
+																														</div>
+																													</span>
+																												</div>
+																											</li>
+																										</aura:iteration>
+																									</ol>
+																								</div>
+																							</div>
+																						</div>
+																					</div>
+																				</div>
+																				<!--
+                                                                            <lightning:dualListbox aura:id="stageA" class="slds-hide"
+                                                                                                   label= "Select STAGE A Fields" 
+                                                                                                   sourceLabel="Available" selectedLabel="Selected" 
+                                                                                                   options="{!v.stageOptions}" value="{!v.stageA}"
+                                                                                                   onchange="{! c.handleStageChange }"/>
+                                                                            <lightning:dualListbox aura:id="stageB" class="slds-hide"
+                                                                                                   label= "Select STAGE B Fields" 
+                                                                                                   sourceLabel="Available" selectedLabel="Selected" 
+                                                                                                   options="{!v.stageOptions}" value="{!v.stageB}"
+                                                                                                   onchange="{! c.handleStageChange }"/>
+                                                                            <lightning:dualListbox aura:id="stageC" class="slds-hide"
+                                                                                                   label= "Select STAGE C Fields" 
+                                                                                                   sourceLabel="Available" selectedLabel="Selected" 
+                                                                                                   options="{!v.stageOptions}" value="{!v.stageC}"
+                                                                                                   onchange="{! c.handleStageChange }"/>
+                                                                            <lightning:dualListbox aura:id="stageD" class="slds-hide"
+                                                                                                   label= "Select STAGE D Fields" 
+                                                                                                   sourceLabel="Available" selectedLabel="Selected" 
+                                                                                                   options="{!v.stageOptions}" value="{!v.stageD}"
+                                                                                                   onchange="{! c.handleStageChange }"/>-->
+																			</div>
+
+																			<!--If none selected from the navigation items-->
+																			<div aura:id="stageNull"
+																				class="slds-align_absolute-center"
+																				style="height: 20rem">Please select a Standard
+																				field</div>
+																		</lightning:layoutItem>
+																		<lightning:layoutItem size="12" padding="around-small">
+																			<lightning:button iconName="utility:left"
+																				iconPosition="left" disabled="false" label="Back"
+																				onclick="{!c.goBackOne}" variant="brand" />
+																			<lightning:button class="stageTypeMap"
+																				iconName="utility:right" iconPosition="right"
+																				aura:id="submitStage" disabled="true" label="Next"
+																				onclick="{!c.submitStageAction}" variant="brand" />
+																			<lightning:button class="stageTypeMap rtMar"
+																				aura:id="mapStageId" label="Map"
+																				onclick="{!c.mapStage}" variant="success" />
+																			<lightning:button
+																				class="stageTypeMap rtMar slds-hide"
+																				aura:id="unmapStageId" label="Unmap"
+																				onclick="{!c.unmapStage}" variant="destructive" />
+																		</lightning:layoutItem>
+																	</lightning:layout>
+																</div>
+															</form>
+														</fieldset>
+													</lightning:layoutItem>
+												</lightning:layout>
+											</lightning:tab>
+
+											<!--Mapping section 3 rd tab with all other field mappings-->
+											<lightning:tab label="Field Mapping" id="fieldMap">
+												<lightning:layout multipleRows="true">
+													<lightning:layoutItem class="fieldContainer scroll-frame"
+														size="12" smallDeviceSize="12" mediumDeviceSize="12"
+														largeDeviceSize="8">
+														<fieldset
+															class="slds-box slds-theme_default slds-container_xx-large">
+															<legend id="newexpenseform"
+																class="slds-text-heading_medium slds-p-vertical_small">
+																Case Name </legend>
+
+															<form class="slds-form_stacked">
+																<lightning:layout multipleRows="true" class="padding">
+																	<lightning:layoutItem size="12">
+																		<lightning:input disabled="false"
+																			aura:Id="caseNameFld" class="caseSelect"
+																			name="Object" label="Case Name"
+																			value="{!v.caseNameFields.traverse}"
+																			onclick="{!c.unHideCaseNameFld}" />
+																		<lightning:button class="caseNameFld"
+																			aura:id="caseNameFldConfirm" disabled="false"
+																			label="Map" onclick="{!c.confirmCaseNameFld}"
+																			variant="brand" />
+																		<lightning:button class="caseNameFld"
+																			aura:id="caseNameFldChange" disabled="true"
+																			label="Unmap" onclick="{!c.changeCaseNameFld}" />
+																	</lightning:layoutItem>
+																</lightning:layout>
+															</form>
+														</fieldset>
+
+														<fieldset
+															class="slds-box slds-theme_default slds-container_xx-large">
+															<legend id="newexpenseform"
+																class="slds-text-heading_medium slds-p-vertical_small">
+																Case Index Number </legend>
+
+															<form class="slds-form_stacked">
+																<lightning:layout multipleRows="true" class="padding">
+																	<lightning:layoutItem size="12">
+																		<lightning:input disabled="false"
+																			aura:Id="caseIndexFld" class="caseSelect"
+																			name="Object" label="Case Index Number"
+																			value="{!v.caseIndexFields.traverse}"
+																			onclick="{!c.unHideCaseIndexFld}" />
+																		<lightning:button class="caseIndexFld"
+																			aura:id="caseIndexFldConfirm" disabled="false"
+																			label="Map" onclick="{!c.confirmCaseIndexFld}"
+																			variant="brand" />
+																		<lightning:button class="caseIndexFld"
+																			aura:id="caseIndexFldChange" disabled="true"
+																			label="UnMap" onclick="{!c.changeCaseIndexFld}" />
+																	</lightning:layoutItem>
+																</lightning:layout>
+															</form>
+														</fieldset>
+
+														<fieldset
+															class="slds-box slds-theme_default slds-container_xx-large">
+															<legend id="newexpenseform"
+																class="slds-text-heading_medium slds-p-vertical_small">
+																Venue </legend>
+
+															<form class="slds-form_stacked">
+																<lightning:layout multipleRows="true" class="padding">
+																	<lightning:layoutItem size="12">
+																		<lightning:input disabled="false" aura:Id="venueFld"
+																			class="caseSelect" name="Object" label="Venue"
+																			value="{!v.venueFields.traverse}"
+																			onclick="{!c.unHideVenueFld}" />
+																		<lightning:button class="venueFld"
+																			aura:id="venueFldConfirm" disabled="false"
+																			label="Map" onclick="{!c.confirmVenueFld}"
+																			variant="brand" />
+																		<lightning:button class="venueFld"
+																			aura:id="venueFldChange" disabled="true"
+																			label="Unmap" onclick="{!c.changeVenueFld}" />
+																	</lightning:layoutItem>
+																</lightning:layout>
+															</form>
+														</fieldset>
+														<fieldset
+															class="slds-box slds-theme_default slds-container_xx-large">
+															<legend id="newexpenseform"
+																class="slds-text-heading_medium slds-p-vertical_small">
+																Estimated Closed date </legend>
+
+															<form class="slds-form_stacked">
+																<lightning:layout multipleRows="true" class="padding">
+																	<lightning:layoutItem size="12">
+																		<lightning:input disabled="false"
+																			aura:Id="closeDateFields" class="caseSelect"
+																			name="Object" label="Estimated Close date"
+																			value="{!v.closedDateFields.traverse}"
+																			onclick="{!c.unHideCloseDateModal}" />
+																		<lightning:button class="closeDateFields"
+																			aura:id="closeDateFieldsConfirm" disabled="false"
+																			label="Map" onclick="{!c.confirmCloseDate}"
+																			variant="brand" />
+																		<lightning:button class="closeDateFields"
+																			aura:id="closeDateFieldsChange" disabled="true"
+																			label="Unmap" onclick="{!c.changeCloseDate}" />
+																	</lightning:layoutItem>
+																</lightning:layout>
+															</form>
+														</fieldset>
+														<fieldset
+															class="slds-box slds-theme_default slds-container_large">
+															<legend id="newexpenseform"
+																class="slds-text-heading_medium slds-p-vertical_small">
+																Total Matter Value </legend>
+
+															<form class="slds-form_stacked">
+																<lightning:layout multipleRows="true" class="padding">
+																	<lightning:layoutItem size="12">
+																		<lightning:input disabled="false"
+																			aura:Id="totalValueFld" class="caseSelect"
+																			name="Object" label="Total Matter value field"
+																			value="{!v.totValueField.traverse}"
+																			onclick="{!c.unHideTotValueModal}" />
+																		<lightning:button class="totalValueFld"
+																			aura:id="totalValueFldConfirm" disabled="false"
+																			label="Map" onclick="{!c.confirmTotalValue}"
+																			variant="brand" />
+																		<lightning:button class="totalValueFld"
+																			aura:id="totalValueFldChange" disabled="true"
+																			label="Unmap" onclick="{!c.changeTotalValue}" />
+																	</lightning:layoutItem>
+																</lightning:layout>
+															</form>
+														</fieldset>
+														<fieldset
+															class="slds-box slds-theme_default slds-container_xx-large">
+															<legend id="newexpenseform"
+																class="slds-text-heading_medium slds-p-vertical_small">
+																Retainer </legend>
+
+															<form class="slds-form_stacked">
+																<lightning:layout multipleRows="true" class="padding">
+																	<lightning:layoutItem size="12">
+																		<lightning:input disabled="false"
+																			aura:Id="retainerFields" class="caseSelect"
+																			name="Object" label="Retainer"
+																			value="{!v.retainerFields.traverse}"
+																			onclick="{!c.unHidenRetainerFieldsModal}" />
+																		<lightning:button class="retainerFields"
+																			aura:id="retainerFieldsConfirm" disabled="false"
+																			label="Map" onclick="{!c.confirmRetainerFields}"
+																			variant="brand" />
+																		<lightning:button class="retainerFields"
+																			aura:id="retainerFieldsChange" disabled="true"
+																			label="Unmap" onclick="{!c.changeRetainerFields}" />
+																	</lightning:layoutItem>
+																</lightning:layout>
+															</form>
+														</fieldset>
+														<fieldset
+															class="slds-box slds-theme_default slds-container_xx-large">
+															<legend id="newexpenseform"
+																class="slds-text-heading_medium slds-p-vertical_small">
+																Gross </legend>
+
+															<form class="slds-form_stacked">
+																<lightning:layout multipleRows="true" class="padding">
+																	<lightning:layoutItem size="12">
+																		<lightning:input disabled="false"
+																			aura:Id="grossFields" class="caseSelect"
+																			name="Object" label="Gross"
+																			value="{!v.grossFields.traverse}"
+																			onclick="{!c.unHideGrossFieldsModal}" />
+																		<lightning:button class="grossFields"
+																			aura:id="grossFieldsConfirm" disabled="false"
+																			label="Map" onclick="{!c.confirmGrossFields}"
+																			variant="brand" />
+																		<lightning:button class="grossFields"
+																			aura:id="grossFieldsChange" disabled="true"
+																			label="Unmap" onclick="{!c.changeGrossFields}" />
+																	</lightning:layoutItem>
+																</lightning:layout>
+															</form>
+														</fieldset>
+
+
+														<fieldset
+															class="slds-box slds-theme_default slds-container_xx-large">
+															<legend id="newexpenseform"
+																class="slds-text-heading_medium slds-p-vertical_small">
+																Dollar Fee due to Others </legend>
+
+															<form class="slds-form_stacked">
+																<lightning:layout multipleRows="true" class="padding">
+																	<lightning:layoutItem size="12">
+																		<lightning:input disabled="false"
+																			aura:Id="dollarFeeFld" class="caseSelect"
+																			name="Object" label="Dollar Fee due to Others"
+																			value="{!v.dollarFeeFields.traverse}"
+																			onclick="{!c.unHideDollarFeeFldModal}" />
+																		<lightning:button class="dollarFeeFld"
+																			aura:id="dollarFeeFldConfirm" disabled="false"
+																			label="Map" onclick="{!c.confirmDollarFeeFld}"
+																			variant="brand" />
+																		<lightning:button class="dollarFeeFld"
+																			aura:id="dollarFeeFldChange" disabled="true"
+																			label="Unmap" onclick="{!c.changeDollarFeeFld}" />
+																	</lightning:layoutItem>
+																</lightning:layout>
+															</form>
+														</fieldset>
+
+														<fieldset
+															class="slds-box slds-theme_default slds-container_xx-large">
+															<legend id="newexpenseform"
+																class="slds-text-heading_medium slds-p-vertical_small">
+																Pct Fee fur to Others </legend>
+
+															<form class="slds-form_stacked">
+																<lightning:layout multipleRows="true" class="padding">
+																	<lightning:layoutItem size="12">
+																		<lightning:input disabled="false" aura:Id="pctFeeFld"
+																			class="caseSelect" name="Object"
+																			label="Pct Fee fur to Others"
+																			value="{!v.pctFeeFields.traverse}"
+																			onclick="{!c.unHidePctFeeFldModal}" />
+																		<lightning:button class="pctFeeFld"
+																			aura:id="pctFeeFldConfirm" disabled="false"
+																			label="Map" onclick="{!c.confirmPctFeeFld}"
+																			variant="brand" />
+																		<lightning:button class="pctFeeFld"
+																			aura:id="pctFeeFldChange" disabled="true"
+																			label="Unmap" onclick="{!c.changePctFeeFld}" />
+																	</lightning:layoutItem>
+																</lightning:layout>
+															</form>
+														</fieldset>
+														<fieldset
+															class="slds-box slds-theme_default slds-container_xx-large">
+															<legend id="newexpenseform"
+																class="slds-text-heading_medium slds-p-vertical_small">
+																Net </legend>
+
+															<form class="slds-form_stacked">
+																<lightning:layout multipleRows="true" class="padding">
+																	<lightning:layoutItem size="12">
+																		<lightning:input disabled="false" aura:Id="netFields"
+																			class="caseSelect" name="Object" label="Net"
+																			value="{!v.netFields.traverse}"
+																			onclick="{!c.unHideNetFieldsModal}" />
+																		<lightning:button class="netFields"
+																			aura:id="netFieldsConfirm" disabled="false"
+																			label="Map" onclick="{!c.confirmNetFields}"
+																			variant="brand" />
+																		<lightning:button class="netFields"
+																			aura:id="netFieldsChange" disabled="true"
+																			label="Unmap" onclick="{!c.changeNetFields}" />
+																	</lightning:layoutItem>
+																</lightning:layout>
+															</form>
+														</fieldset>
+													</lightning:layoutItem>
+												</lightning:layout>
+												<lightning:layout class="bottomBtns topLeftPadding"
+													horizontalAlign="spread">
+													<lightning:layoutItem>
+														<lightning:button iconName="utility:left"
+															iconPosition="left" disabled="false" label="Back"
+															onclick="{!c.goBackOne}" variant="brand" />
+													</lightning:layoutItem>
+													<lightning:layoutItem padding="around-small">
+														<lightning:button label="Submit" variant="brand"
+															onclick="{!c.SubmitAll}" />
+													</lightning:layoutItem>
+												</lightning:layout>
+											</lightning:tab>
+										</lightning:tabset>
+									</form>
+								</div>
+							</aura:if>
+						</lightning:layoutItem>
+					</lightning:layout>
+				</lightning:layoutItem>
+			</lightning:layout>
+		</lightning:layoutItem>
+
+		<div aura:Id="objectSelectionModal"
+			description="place holder for Putting object selection mapping in place" />
+
+		<!--Type field selection Modal box-->
+		<div aura:id="lookupParentModalType" class="slds-hide"
+			style="height: 640px;">
+
+			<!--Section specified the moadl box section-->
+			<section role="dialog" tabindex="-1"
+				aria-labelledby="modal-heading-01" aria-modal="true"
+				aria-describedby="modal-content-id-1"
+				class="slds-modal slds-fade-in-open">
+
+				<!--Parent Modal container-->
+				<div class="slds-modal__container">
+
+					<!--Title section of the modal box with an inverse button-->
+					<header class="slds-modal__header">
+						<button onclick="{!c.hideParentLookupModalType}"
+							class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+							title="Close">
+							X <span class="slds-assistive-text">Close</span>
+						</button>
+						<h2 id="modal-heading-01"
+							class="slds-text-heading_medium slds-hyphenate">Case Type
+							Selection</h2>
+					</header>
+
+					<!--Modal body part contins all the fields available-->
+					<div class="slds-modal__content slds-p-around_medium">
+						<div style="display: flex; flex-direction: row; overflow: auto;"
+							class="scroll-frame">
+							<c:ObjectField_Mapping_Lookup aura:id="ESQ_LookupObjectFields"
+								parentFields="{!v.typeFields}" />
+						</div>
+					</div>
+
+					<!--Footer remoed since it has no action to be performed-->
+				</div>
+			</section>
+
+			<!--To create a backdrop and paralize everything else than the modal box-->
+			<div class="slds-backdrop slds-backdrop_open"></div>
+		</div>
+
+		<!--stage field selection Modal box-->
+		<div aura:id="lookupParentModalStage" class="slds-hide"
+			style="height: 640px;">
+			<section role="dialog" tabindex="-1"
+				aria-labelledby="modal-heading-01" aria-modal="true"
+				aria-describedby="modal-content-id-1"
+				class="slds-modal slds-fade-in-open">
+				<div class="slds-modal__container">
+					<header class="slds-modal__header">
+						<button onclick="{!c.hideParentLookupModalStage}"
+							class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+							title="Close">
+							X <span class="slds-assistive-text">Close</span>
+						</button>
+						<h2 class="slds-text-heading_medium slds-hyphenate">Case
+							Stage Selection</h2>
+					</header>
+					<div class="slds-modal__content slds-p-around_medium">
+						<div style="display: flex; flex-direction: row; overflow: auto;"
+							class="scroll-frame">
+							<c:ObjectField_Mapping_Lookup aura:id="ESQ_LookupObjectFields"
+								parentFields="{!v.stageFields}" />
+						</div>
+					</div>
+				</div>
+			</section>
+			<div class="slds-backdrop slds-backdrop_open"></div>
+		</div>
+
+		<!--All other field selection Modal boxes followed below-->
+		<!--c:<component name> calls the child component in place of the called place holder for all the below-->
+		<div aura:id="lookupParentModaltotValueField" class="slds-hide"
+			style="height: 640px;">
+			<section role="dialog" tabindex="-1"
+				aria-labelledby="modal-heading-01" aria-modal="true"
+				aria-describedby="modal-content-id-1"
+				class="slds-modal slds-fade-in-open">
+				<div class="slds-modal__container">
+					<header class="slds-modal__header">
+						<button onclick="{!c.hideParentLookupModalTotValue}"
+							class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+							title="Close">
+							X <span class="slds-assistive-text">Close</span>
+						</button>
+						<h2 class="slds-text-heading_medium slds-hyphenate">Total
+							Matter Value Selection</h2>
+					</header>
+					<div class="slds-modal__content slds-p-around_medium">
+						<div style="display: flex; flex-direction: row; overflow: auto;"
+							class="scroll-frame">
+							<c:ObjectField_Mapping_FieldMapping
+								aura:id="ESQ_LookupObjectFields"
+								parentFields="{!v.otherFieldsTypes}" numFieldType="CURRENCY"
+								standardField="totValueField" firstValue="true" />
+						</div>
+					</div>
+				</div>
+			</section>
+			<div class="slds-backdrop slds-backdrop_open"></div>
+		</div>
+
+		<div aura:id="lookupParentModalclosedDateFields" class="slds-hide"
+			style="height: 640px;">
+			<section role="dialog" tabindex="-1"
+				aria-labelledby="modal-heading-01" aria-modal="true"
+				aria-describedby="modal-content-id-1"
+				class="slds-modal slds-fade-in-open">
+				<div class="slds-modal__container">
+					<header class="slds-modal__header">
+						<button onclick="{!c.hideParentLookupModalCloseDate}"
+							class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+							title="Close">
+							X <span class="slds-assistive-text">Close</span>
+						</button>
+						<h2 class="slds-text-heading_medium slds-hyphenate">Closed
+							Date Field Selection</h2>
+					</header>
+					<div class="slds-modal__content slds-p-around_medium">
+						<div style="display: flex; flex-direction: row; overflow: auto;"
+							class="scroll-frame">
+							<c:ObjectField_Mapping_FieldMapping
+								aura:id="ESQ_LookupObjectFields"
+								parentFields="{!v.otherFieldsTypes}" numFieldType="DATE"
+								standardField="closedDateFields" firstValue="true" />
+						</div>
+					</div>
+				</div>
+			</section>
+			<div class="slds-backdrop slds-backdrop_open"></div>
+		</div>
+
+		<div aura:id="lookupParentModalgrossFields" class="slds-hide"
+			style="height: 640px;">
+			<section role="dialog" tabindex="-1"
+				aria-labelledby="modal-heading-01" aria-modal="true"
+				aria-describedby="modal-content-id-1"
+				class="slds-modal slds-fade-in-open">
+				<div class="slds-modal__container">
+					<header class="slds-modal__header">
+						<button onclick="{!c.hideParentLookupModalGrossFields	}"
+							class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+							title="Close">
+							X <span class="slds-assistive-text">Close</span>
+						</button>
+						<h2 class="slds-text-heading_medium slds-hyphenate">Gross
+							Field Selection</h2>
+					</header>
+					<div class="slds-modal__content slds-p-around_medium">
+						<div style="display: flex; flex-direction: row; overflow: auto;"
+							class="scroll-frame">
+							<c:ObjectField_Mapping_FieldMapping
+								aura:id="ESQ_LookupObjectFields"
+								parentFields="{!v.otherFieldsTypes}" numFieldType="CURRENCY"
+								standardField="grossFields" firstValue="true" />
+						</div>
+					</div>
+				</div>
+			</section>
+			<div class="slds-backdrop slds-backdrop_open"></div>
+		</div>
+
+		<div aura:id="lookupParentModalnetFields" class="slds-hide"
+			style="height: 640px;">
+			<section role="dialog" tabindex="-1"
+				aria-labelledby="modal-heading-01" aria-modal="true"
+				aria-describedby="modal-content-id-1"
+				class="slds-modal slds-fade-in-open">
+				<div class="slds-modal__container">
+					<header class="slds-modal__header">
+						<button onclick="{!c.hideParentLookupModalNetFields}"
+							class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+							title="Close">
+							X <span class="slds-assistive-text">Close</span>
+						</button>
+						<h2 class="slds-text-heading_medium slds-hyphenate">Net Field
+							Selection</h2>
+					</header>
+					<div class="slds-modal__content slds-p-around_medium">
+						<div style="display: flex; flex-direction: row; overflow: auto;"
+							class="scroll-frame">
+							<c:ObjectField_Mapping_FieldMapping
+								aura:id="ESQ_LookupObjectFields"
+								parentFields="{!v.otherFieldsTypes}" numFieldType="CURRENCY"
+								standardField="netFields" firstValue="true" />
+						</div>
+					</div>
+				</div>
+			</section>
+			<div class="slds-backdrop slds-backdrop_open"></div>
+		</div>
+
+		<div aura:id="lookupParentModalretainerFields" class="slds-hide"
+			style="height: 640px;">
+			<section role="dialog" tabindex="-1"
+				aria-labelledby="modal-heading-01" aria-modal="true"
+				aria-describedby="modal-content-id-1"
+				class="slds-modal slds-fade-in-open">
+				<div class="slds-modal__container">
+					<header class="slds-modal__header">
+						<button onclick="{!c.hideParentLookupModalRetainValue}"
+							class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+							title="Close">
+							X <span class="slds-assistive-text">Close</span>
+						</button>
+						<h2 class="slds-text-heading_medium slds-hyphenate">Retainer
+							Field Selection</h2>
+					</header>
+					<div class="slds-modal__content slds-p-around_medium">
+						<div style="display: flex; flex-direction: row; overflow: auto;"
+							class="scroll-frame">
+							<c:ObjectField_Mapping_FieldMapping
+								aura:id="ESQ_LookupObjectFields"
+								parentFields="{!v.otherFieldsTypes}" numFieldType="CURRENCY"
+								standardField="retainerFields" firstValue="true" />
+						</div>
+					</div>
+				</div>
+			</section>
+			<div class="slds-backdrop slds-backdrop_open"></div>
+		</div>
+
+		<div aura:id="lookupParentModaldollarFeeFields" class="slds-hide"
+			style="height: 640px;">
+			<section role="dialog" tabindex="-1"
+				aria-labelledby="modal-heading-01" aria-modal="true"
+				aria-describedby="modal-content-id-1"
+				class="slds-modal slds-fade-in-open">
+				<div class="slds-modal__container">
+					<header class="slds-modal__header">
+						<button onclick="{!c.hideParentLookupModaldollarFeeFld}"
+							class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+							title="Close">
+							X <span class="slds-assistive-text">Close</span>
+						</button>
+						<h2 class="slds-text-heading_medium slds-hyphenate">Dollar
+							Fee Selection</h2>
+					</header>
+					<div class="slds-modal__content slds-p-around_medium">
+						<div style="display: flex; flex-direction: row; overflow: auto;"
+							class="scroll-frame">
+							<c:ObjectField_Mapping_FieldMapping
+								aura:id="ESQ_LookupObjectFields"
+								parentFields="{!v.otherFieldsTypes}" numFieldType="CURRENCY"
+								standardField="dollarFeeFields" firstValue="true" />
+						</div>
+					</div>
+				</div>
+			</section>
+			<div class="slds-backdrop slds-backdrop_open"></div>
+		</div>
+
+		<div aura:id="lookupParentModalpctFeeFields" class="slds-hide"
+			style="height: 640px;">
+			<section role="dialog" tabindex="-1"
+				aria-labelledby="modal-heading-01" aria-modal="true"
+				aria-describedby="modal-content-id-1"
+				class="slds-modal slds-fade-in-open">
+				<div class="slds-modal__container">
+					<header class="slds-modal__header">
+						<button onclick="{!c.hideParentLookupModalpctFeeFld}"
+							class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+							title="Close">
+							X <span class="slds-assistive-text">Close</span>
+						</button>
+						<h2 class="slds-text-heading_medium slds-hyphenate">Pct Fee
+							Field Selection</h2>
+					</header>
+					<div class="slds-modal__content slds-p-around_medium">
+						<div style="display: flex; flex-direction: row; overflow: auto;"
+							class="scroll-frame">
+							<c:ObjectField_Mapping_FieldMapping
+								aura:id="ESQ_LookupObjectFields"
+								parentFields="{!v.otherFieldsTypes}" numFieldType="PERCENT"
+								standardField="pctFeeFields" firstValue="true" />
+						</div>
+					</div>
+				</div>
+			</section>
+			<div class="slds-backdrop slds-backdrop_open"></div>
+		</div>
+
+		<div aura:id="lookupParentModalcaseNameFields" class="slds-hide"
+			style="height: 640px;">
+			<section role="dialog" tabindex="-1"
+				aria-labelledby="modal-heading-01" aria-modal="true"
+				aria-describedby="modal-content-id-1"
+				class="slds-modal slds-fade-in-open">
+				<div class="slds-modal__container">
+					<header class="slds-modal__header">
+						<button onclick="{!c.hideParentLookupModalcaseNameFld}"
+							class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+							title="Close">
+							X <span class="slds-assistive-text">Close</span>
+						</button>
+						<h2 class="slds-text-heading_medium slds-hyphenate">Case Name
+							Selection</h2>
+					</header>
+					<div class="slds-modal__content slds-p-around_medium">
+						<div style="display: flex; flex-direction: row; overflow: auto;"
+							class="scroll-frame">
+							<c:ObjectField_Mapping_FieldMapping
+								aura:id="ESQ_LookupObjectFields"
+								parentFields="{!v.otherFieldsTypes}" numFieldType="TEXTAREA"
+								standardField="caseNameFields" firstValue="true" />
+						</div>
+					</div>
+				</div>
+			</section>
+			<div class="slds-backdrop slds-backdrop_open"></div>
+		</div>
+
+		<div aura:id="lookupParentModalcaseIndexFields" class="slds-hide"
+			style="height: 640px;">
+			<section role="dialog" tabindex="-1"
+				aria-labelledby="modal-heading-01" aria-modal="true"
+				aria-describedby="modal-content-id-1"
+				class="slds-modal slds-fade-in-open">
+				<div class="slds-modal__container">
+					<header class="slds-modal__header">
+						<button onclick="{!c.hideParentLookupModalcaseIndexFld}"
+							class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+							title="Close">
+							X <span class="slds-assistive-text">Close</span>
+						</button>
+						<h2 class="slds-text-heading_medium slds-hyphenate">Case
+							Index Selection</h2>
+					</header>
+					<div class="slds-modal__content slds-p-around_medium">
+						<div style="display: flex; flex-direction: row; overflow: auto;"
+							class="scroll-frame">
+							<c:ObjectField_Mapping_FieldMapping
+								aura:id="ESQ_LookupObjectFields"
+								parentFields="{!v.otherFieldsTypes}" numFieldType="TEXTAREA"
+								standardField="caseIndexFields" firstValue="true" />
+						</div>
+					</div>
+				</div>
+			</section>
+			<div class="slds-backdrop slds-backdrop_open"></div>
+		</div>
+
+		<div aura:id="lookupParentModalvenueFields" class="slds-hide"
+			style="height: 640px;">
+			<section role="dialog" tabindex="-1"
+				aria-labelledby="modal-heading-01" aria-modal="true"
+				aria-describedby="modal-content-id-1"
+				class="slds-modal slds-fade-in-open">
+				<div class="slds-modal__container">
+					<header class="slds-modal__header">
+						<button onclick="{!c.hideParentLookupModalvenueFld}"
+							class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+							title="Close">
+							X <span class="slds-assistive-text">Close</span>
+						</button>
+						<h2 class="slds-text-heading_medium slds-hyphenate">Venue
+							Selection</h2>
+					</header>
+					<div class="slds-modal__content slds-p-around_medium">
+						<div style="display: flex; flex-direction: row; overflow: auto;"
+							class="scroll-frame">
+							<c:ObjectField_Mapping_FieldMapping
+								aura:id="ESQ_LookupObjectFields"
+								parentFields="{!v.otherFieldsTypes}" numFieldType="TEXTAREA"
+								standardField="venueFields" firstValue="true" />
+						</div>
+					</div>
+				</div>
+			</section>
+			<div class="slds-backdrop slds-backdrop_open"></div>
+		</div>
+	</lightning:layout>
+
+</aura:component>

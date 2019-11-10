@@ -1,0 +1,278 @@
+<aura:component controller="Sharing_Details"
+	implements="flexipage:availableForAllPageTypes,force:appHostable">
+	<aura:attribute name="valuesOnExpense" type="Expense__c"
+		default="{sobjectType : 'Expense__c'}" />
+	<aura:attribute name="sharingType" type="boolean" />
+
+	<!--For Storing Values-->
+	<aura:attribute name="selectedExpenseType" type="String" />
+	<aura:attribute name="selectedCategory" type="String" />
+	<aura:attribute name="selectedPayment" type="String" />
+	<aura:attribute name="selectedUser" type="String" />
+	<aura:attribute name="selectedSecondUser" type="String" />
+	<aura:attribute name="enteredAmount" type="Decimal" />
+	<aura:attribute name="selectionOption" type="Decimal" />
+	<aura:attribute name="selectedExpDate" type="Date" />
+
+
+
+
+	<!--For Category Selection-->
+	<!--aura:attribute name="Category" type="String[]" default="Others,Rent,Advance,Vegetables,Non Veg,Water,Groceries,Bike,Snacks,Fruits,Electronics,Bike,Snacks,Fruits,Gift,Shopping,Personal care,Mobile Recharge,Investment,Medicines,Cleaning,Gas,Electricity,Tourism,Food,Shopping,Personal care,Mobile Recharge,Investment,Medicines,Cleaning"/-->
+	<aura:attribute name="Category" type="String[]" />
+	<aura:attribute name="Wallet" type="String[]" />
+	<aura:attribute name="Bank" type="String[]" />
+	<!--aura:attribute name="Payment" type="String[]" default="Card,Cash,Wallet"/-->
+	<aura:attribute name="Payment" type="String[]" />
+	<!--aura:attribute name="User" type="String[]" default="Aravindh,Yokesh,Tejas"/-->
+	<aura:attribute name="User" type="String[]" />
+	<!--aura:attribute name="ExpenceType" type="String[]" default="Common,Pair Shared,Individual"/-->
+	<aura:attribute name="ExpenceType" type="String[]" />
+
+	<!--Handler-->
+	<aura:handler name="init" value="{!this}" action="{!c.onLoad}" />
+
+
+	<div class="all">
+		<div>
+			<div class="slds-grid">
+				<div style="padding-top: 1rem; padding-right: 1rem;">
+					<lightning:dynamicIcon iconSize="large" type="eq" option="play"
+						alternativeText="On a call" />
+				</div>
+				<div>
+					<ui:outputText class="title" value="Expense Manager" />
+				</div>
+			</div>
+
+			<aura:if isTrue="{!v.valuesOnExpense.Expense_on__c != null}">
+				<div class="box slds-box">
+					<aura:if isTrue="{!v.valuesOnExpense.Name != null}">
+						<tr>
+							<td>Expense Name</td>
+							<td>-</td>
+							<td>&nbsp;&nbsp;{!v.valuesOnExpense.Name}</td>
+						</tr>
+					</aura:if>
+					<aura:if isTrue="{!v.valuesOnExpense.Expense_on__c != null}">
+						<tr>
+							<td>Expense type</td>
+							<td>-</td>
+							<td>&nbsp;&nbsp;{!v.valuesOnExpense.Expense_on__c}</td>
+						</tr>
+					</aura:if>
+					<aura:if isTrue="{!v.selectedUser != null}">
+						<tr>
+							<td>Spent by</td>
+							<td>-</td>
+							<td>&nbsp;&nbsp;{!v.selectedUser}</td>
+						</tr>
+					</aura:if>
+					<aura:if isTrue="{!v.valuesOnExpense.Shared_with__c != null}">
+						<tr>
+							<td>Shared with</td>
+							<td>-</td>
+							<td>&nbsp;&nbsp;{!v.valuesOnExpense.Shared_with__c}</td>
+						</tr>
+					</aura:if>
+					<aura:if isTrue="{!v.valuesOnExpense.Payment_Method__c != null}">
+						<tr>
+							<td>Payment Method</td>
+							<td>-</td>
+							<td>&nbsp;&nbsp;<ui:outputText
+									value="{!v.valuesOnExpense.Payment_Method__c}" /></td>
+						</tr>
+					</aura:if>
+					<aura:if isTrue="{!v.valuesOnExpense.Amount__c != null}">
+						<tr>
+							<td>Amount</td>
+							<td>-</td>
+							<td>&nbsp;&nbsp;<lightning:formattedNumber
+									value="{!v.valuesOnExpense.Amount__c}" style="currency"
+									currencyCode="USD" /></td>
+						</tr>
+					</aura:if>
+					<aura:if isTrue="{!v.valuesOnExpense.Wallet_Name__c != null}">
+						<tr>
+							<td>Wallet Name</td>
+							<td>-</td>
+							<td>&nbsp;&nbsp;{!v.valuesOnExpense.Wallet_Name__c}</td>
+						</tr>
+					</aura:if>
+					<aura:if isTrue="{!v.valuesOnExpense.Bank_Name__c != null}">
+						<tr>
+							<td>Bank Name</td>
+							<td>-</td>
+							<td>&nbsp;&nbsp;{!v.valuesOnExpense.Bank_Name__c}</td>
+						</tr>
+					</aura:if>
+					<aura:if isTrue="{!v.valuesOnExpense.Category__c != null}">
+						<tr>
+							<td>Category</td>
+							<td>-</td>
+							<td>&nbsp;&nbsp;{!v.valuesOnExpense.Category__c}</td>
+						</tr>
+					</aura:if>
+					<aura:if isTrue="{!v.valuesOnExpense.Comments__c != null}">
+						<tr>
+							<td>Comments</td>
+							<td>-</td>
+							<td>&nbsp;&nbsp;{!v.valuesOnExpense.Comments__c}</td>
+						</tr>
+					</aura:if>
+					<aura:if isTrue="{!v.valuesOnExpense.Expense_Date__c != null}">
+						<tr>
+							<td>Expense Date</td>
+							<td>-</td>
+							<td>&nbsp;&nbsp;<lightning:formattedText
+									value="{!v.valuesOnExpense.Expense_Date__c}" /></td>
+						</tr>
+					</aura:if>
+				</div>
+			</aura:if>
+		</div>
+
+
+
+		<!--Expnese type-->
+		<div aura:Id="typeId">
+			Select Expense type <br />
+			<aura:iteration items="{!v.ExpenceType}" var="eType">
+				<lightning:button aura:Id="expType" title="{!eType}"
+					label="{!eType}" onclick="{!c.setExpenseType}" value="{!eType}" />
+			</aura:iteration>
+		</div>
+
+
+
+		<!--User-->
+		<div aura:Id="userId" class="slds-hide">
+			Spent by <br />
+			<aura:iteration items="{!v.User}" var="usr">
+				<lightning:button aura:Id="userName" title="{!usr}" label="{!usr}"
+					onclick="{!c.setUser}" value="{!usr}" />
+			</aura:iteration>
+		</div>
+
+		<!--Shared User-->
+		<div aura:Id="shareUserId" class="slds-hide">
+			Shared with <br />
+			<aura:iteration items="{!v.User}" var="usr">
+				<aura:if isTrue="{!usr != v.selectedUser}">
+					<lightning:button aura:Id="nextUserName" title="{!usr}"
+						label="{!usr}" onclick="{!c.setSecondUser}" value="{!usr}" />
+				</aura:if>
+			</aura:iteration>
+		</div>
+
+		<!--<lightning:button title="Common" label="Common" onclick="{!c.setCommon}"	/>
+    <lightning:button title="Pair Shared" label="Pair Shared" onclick="{!c.setPair}"	/>
+    <lightning:button title="Individual" label="Individual" onclick="{!c.setIndividual}"	/>
+    <lightning:button title="Aravindh" label="Aravindh" onclick="{!c.setAravindh}"	/>
+    <lightning:button title="Tejas" label="Tejas" onclick="{!c.setYokesh}"	/>
+    <lightning:button title="Yokesh" label="Yokesh" onclick="{!c.setsetTejas}"	/>-->
+
+		<!--Amount Field-->
+		<div aura:Id="amountId" class="slds-hide">
+			<lightning:input type="number" aura:id="amountField" label="Amount"
+				name="Amount" formatter="currency" step="0.01"
+				value="{!v.valuesOnExpense.Amount__c}" />
+			<lightning:button variant="brand" title="Next" label="Next"
+				onclick="{!c.setAmount}" />
+		</div>
+
+		<!--Catogery-->
+		<div aura:Id="catogeryId" class="slds-hide">
+			<lightning:select aura:id="select" name="Select Category"
+				label="Select Category" onchange="{!c.doSomething}">
+				<option value="--None--" text="--None--" />
+				<aura:iteration items="{!v.Category}" var="item">
+					<option value="{!item}" text="{!item}" />
+				</aura:iteration>
+			</lightning:select>
+			<!--lightning:button aura:Id="setCat" title="Select" label="Next" onclick="{!c.doSomething}"/-->
+		</div>
+
+		<!--Payment Method-->
+		<div aura:Id="payId" class="slds-hide">
+			Payment method <br />
+			<aura:iteration items="{!v.Payment}" var="pay">
+				<lightning:button aura:Id="PaymentMethod" title="{!pay}"
+					label="{!pay}" onclick="{!c.setPayment}" value="{!pay}" />
+			</aura:iteration>
+		</div>
+
+		<!--++++++++++++++++++++Blcok Cashing++++++++++++++++++++++-->
+		<!--Wallet-->
+		<div aura:Id="walletId" class="slds-hide">
+			<lightning:select aura:Id="wallet" name="Wallet Name"
+				label="Wallet Name" onchange="{!c.setWallet}">
+				<option value="--None--" text="--None--" />
+				<aura:iteration items="{!v.Wallet}" var="item">
+					<option aura:Id="selectedOption" value="{!item}" text="{!item}" />
+				</aura:iteration>
+			</lightning:select>
+		</div>
+
+		<!--Bank-->
+		<div aura:Id="bankId" class="slds-hide">
+			<lightning:select aura:Id="bank" name="Bank Name" label="Bank Name"
+				onchange="{!c.setBank}">
+				<option value="--None--" text="--None--" />
+				<aura:iteration items="{!v.Bank}" var="item">
+					<option value="{!item}" text="{!item}" />
+				</aura:iteration>
+			</lightning:select>
+		</div>
+		<!--=============================-->
+
+		<!--Custom Block-->
+		<div aura:Id="customEdit" class="slds-hide">
+			<lightning:button aura:Id="setDate" title="Change Date"
+				label="Change Date" onclick="{!c.setCustom}" />
+			<lightning:button aura:Id="setName" title="Change Expense Name"
+				label="Change Expense Name" onclick="{!c.setCustom}" />
+			<lightning:button aura:Id="saveNow" variant="brand"
+				title="Quick Save" label="Quick Save" onclick="{!c.save}" />
+		</div>
+
+		<!--Date field-->
+		<div aura:Id="dateField" class="slds-hide">
+			<ui:inputDate aura:id="selectedDate" label="Select a date"
+				displayDatePicker="true"
+				value="{!v.valuesOnExpense.Expense_Date__c}" />
+			<lightning:button aura:Id="setDateAndLabel" title="Set Date"
+				label="Set Date" onclick="{!c.actionSet}" />
+		</div>
+
+
+
+		<!--Expense Name-->
+		<div aura:Id="expName" class="slds-hide">
+			<lightning:input aura:id="inputExpName" label="Expense Name"
+				placeholder="Enter a custom Expense Name"
+				value="{!v.valuesOnExpense.Name}" />
+			<lightning:button aura:Id="setDateAndLabel" title="Set Expense Name"
+				label="Set Expense Name" onclick="{!c.actionSet}" />
+		</div>
+
+		<!--Add Comments-->
+		<div aura:Id="comments" class="slds-hide">
+			<lightning:input aura:id="inputExpComment"
+				label="Additional Comments" placeholder="Add Comments"
+				value="{!v.valuesOnExpense.Comments__c}" />
+			<lightning:button aura:Id="setComments" title="Save Comment"
+				label="Save Comment" variant="brand" onclick="{!c.setComments}" />
+		</div>
+
+		<br />
+		<br />
+		<br />
+		<br />
+		<div class="slds-align_absolute-center" style="width: 50%">
+			<lightning:button aura:Id="reset" title="Reset" label="Reset"
+				variant="destructive" iconName="utility:refresh" iconPosition="left"
+				onclick="{!c.resetAll}" />
+		</div>
+	</div>
+</aura:component>

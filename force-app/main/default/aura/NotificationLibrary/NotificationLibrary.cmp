@@ -1,0 +1,15 @@
+<aura:component>
+
+	<!--
+Accepted variants are info, warning, and error. This value defaults to info.
+showNotice
+showToast
+-->
+
+	<lightning:notificationsLibrary aura:id="notifLib" />
+    Lightning Component to showToast and showNotice, Supported from version 41.0
+    <lightning:button name="notice" label="Show Notice"
+		onclick="{!c.handleShowNotice}" />
+	<lightning:button name="notice" label="Show Toast"
+		onclick="{!c.handleShowToast}" />
+</aura:component>

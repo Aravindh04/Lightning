@@ -1,0 +1,122 @@
+<!--**********************************************************************************
+@   Container type		: Markup
+@   Dependecy	 		: Child component
+@   Registered events 	: 1
+@   Init in Use		 	: Yes
+@   Extends/Extensible	: No
+@ 	Number of Attributes: 3
+@ 	Number of handlers	: 0
+@   Description 		: To support the calling parent with a modal window to show multileve lookups and values
+@ 	Copy rights @		: 
+****************************************************************************************-->
+
+<aura:component controller="ObjectField_MappingClass">
+
+	<aura:attribute name="parentFields" type="Map"
+		description="Map of the fields of the parent objects" />
+
+	<aura:attribute name="title" type="String" description="" />
+
+	<aura:attribute name="parentsOnly" type="boolean" default="false"
+		description="If the component wants to filter the fields which are reference" />
+
+	<aura:registerEvent name="fieldSelected"
+		type="c:FieldParent_Mapping_Event"
+		description="event trigger when a value is selected" />
+
+	<aura:method name="clearParentLookups"
+		action="{!c.clearParentLookupsHolder}" />
+
+	<div class="slds-grid ">
+		<div class="slds-col"
+			style="border-right: 2px solid #d8dde6; width: 300px; padding-right: 0px;">
+			<nav class="slds-nav-vertical" aria-label="Sub page">
+				<div class="slds-nav-vertical__section">
+					<!--View title with the Parent object name-->
+					<div class="slds-grid slds-grid_align-spread">
+						<div />
+						<div>
+							<h2 id="entity-header" title="{!v.parentFields.title}"
+								class="slds-nav-vertical__title slds-text-title_caps slds-text-heading--large slds-text-align--center slds-truncate"
+								style="max-width: 13rem">{!v.parentFields.list[0].objectName}</h2>
+						</div>
+						<div>
+							<lightning:input class="" type="checkbox-button"
+								title="Parents only" label="Parents only" name="input2"
+								checked="{v.parentsOnly}" onchange="{!c.handleCheckBox}" />
+						</div>
+					</div>
+					<ol class="slds-listbox slds-listbox_vertical">
+
+						<!--Ordered list of fields populated in a container with scroller-->
+						<ui:scrollerWrapper class="scrollable scroll-frame">
+							<aura:iteration items="{!v.parentFields.list}" var="listval"
+								indexVar="listvalindex" aura:id="listOfValues">
+								<aura:if
+									isTrue="{!if(and(listval.label!=null,listval.label!='') ,true, false)}">
+
+									<!--Show values with only lookups/reference-->
+									<aura:if isTrue="{!v.parentsOnly}">
+										<aura:if isTrue="{!listval.isReference=='true'}">
+											<li class="slds-nav-vertical__item"
+												style="display: flex; justify-content: space-between; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+
+												<!--Populating all the required fields of the field in a data set-->
+												<a
+												class="slds-nav-vertical__item slds-nav-vertical__action slds-truncate"
+												data-sobject="{!listval.relationshipParentApi}"
+												data-val="{!listval.fieldApi}"
+												data-isref="{!listval.isReference}"
+												data-fieldapi="{!listval.fieldApi}"
+												data-objectname="{!listval.objectName}"
+												data-relName="{!listval.fieldLabel}"
+												data-valtype="{!listval.valueType}"
+												onclick="{!c.selectThisValue}" id="{!listvalindex}">
+													{!listval.label}&nbsp;({!listval.relationshipParentApi}) </a>
+
+												<button
+													class="slds-button slds-button--icon slds-box_xx-small slds-text-align_center slds-m-around_xx-small"
+													data-id="{!listvalindex}">
+													<lightning:Icon iconName="standard:search" size="small"
+														alternativeText="Lookup" aura:id="lookupBtn"
+														variant="inverse" />
+												</button>
+											</li>
+										</aura:if>
+										<aura:set attribute="else">
+											<li class="'slds-nav-vertical__item"
+												style="display: flex; justify-content: space-between">
+												<a class="slds-nav-vertical__action"
+												data-sobject="{!listval.relationshipParentApi}"
+												data-val="{!listval.fieldApi}"
+												data-isref="{!listval.isReference}"
+												data-fieldapi="{!listval.fieldApi}"
+												data-objectname="{!listval.objectName}"
+												data-relName="{!listval.fieldLabel}"
+												data-valtype="{!listval.valueType}"
+												onclick="{!c.selectThisValue}" id="{!listvalindex}">
+													{!listval.label}&nbsp;<aura:if
+														isTrue="{!listval.isReference=='true'}">({!listval.relationshipParentApi})</aura:if>
+											</a> <aura:if isTrue="{!listval.isReference=='true'}">
+													<button
+														class="slds-button slds-button--icon slds-box_xx-small slds-text-align_center slds-m-around_xx-small"
+														data-id="{!listvalindex}">
+														<lightning:Icon iconName="standard:search" size="small"
+															alternativeText="Lookup" aura:id="lookupBtn"
+															variant="inverse" />
+													</button>
+												</aura:if>
+											</li>
+										</aura:set>
+									</aura:if>
+								</aura:if>
+							</aura:iteration>
+						</ui:scrollerWrapper>
+					</ol>
+				</div>
+			</nav>
+		</div>
+		<div class="slds-col" aura:id="lookupNavigationPlaceHolder" />
+	</div>
+
+</aura:component>

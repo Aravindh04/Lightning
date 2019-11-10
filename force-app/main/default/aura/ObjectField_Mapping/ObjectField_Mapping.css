@@ -1,0 +1,159 @@
+.THIS .container {
+	height: auto;
+}
+
+.THIS .fieldContainer {
+	max-height: -webkit-fill-available;
+	overflow: auto;
+}
+
+.THIS .insScreen {
+	height: 59.7rem;
+}
+
+.THIS .primarySec {
+	border: 1px solid rgb(217, 219, 221);
+}
+
+.THIS .helpText {
+	Position: absolute;
+	top: 0px;
+	right: 0px;
+}
+
+.THIS .bottomBtns {
+	bottom: 2rem;
+}
+
+.THIS .masterSelect {
+	
+}
+
+.THIS .padding {
+	padding: 1rem;
+}
+
+.THIS .stageTypeMap {
+	float: right;
+}
+
+.THIS .caseTypeMap {
+	float: right;
+}
+
+.THIS .rtMar {
+	margin-right: 1rem;
+}
+
+.THIS .boderBoxPadded {
+	padding: 0.2rem;
+	border-radius: .15 rem;
+	border: 1px solid rgb(217, 219, 221);
+}
+
+.THIS .borderBox {
+	border: 1px solid rgb(217, 219, 221);
+}
+
+.THIS .boxAdjust2 {
+	border-radius: 0rem .25rem .25rem 0rem;
+	border: 1px solid rgb(217, 219, 221);
+	padding: 1rem;
+	height: 22rem;
+}
+
+.THIS .boxAdjust1 {
+	border-radius: .25rem 0rem 0rem .25rem;
+	border: 1px solid rgb(217, 219, 221);
+	height: 22rem;
+}
+
+.THIS .boxAdjust3 {
+	border-radius: .25rem 0rem 0rem .25rem;
+	border: 1px solid rgb(217, 219, 221);
+	height: 23rem;
+}
+
+.THIS.pageHeader {
+	position: relative;
+	left: 11.9474px;
+	right: 11.9474px;
+	padding-left: 16.0526px;
+	padding-right: 16.0526px;
+	border-radius: 4px;
+	transform: translate3d(0px, -0.333344px, 0px);
+}
+
+/*Scroller frame*/
+.THIS .scroll-frame::-webkit-scrollbar {
+	-webkit-appearance: none;
+}
+
+.THIS .scroll-frame::-webkit-scrollbar:vertical {
+	width: 11px;
+}
+
+.THIS .scroll-frame::-webkit-scrollbar:horizontal {
+	height: 11px;
+}
+
+.THIS .scroll-frame::-webkit-scrollbar-thumb {
+	border-radius: 8px;
+	border: 2px solid white;
+	/* should match background, can't be transparent */
+	background-color: rgba(0, 0, 0, .5);
+}
+
+.THIS .scroll-frame::-webkit-scrollbar-track {
+	background-color: #fff;
+	border-radius: 8px;
+}
+
+.THIS .scrollable {
+	height: 300px;
+}
+/*Scroller frame ends*/
+.THIS .disable {
+	pointer-events: none;
+	opacity: 0.4;
+}
+
+.THIS.title {
+	background-color: white;
+}
+
+.THIS .subTitle {
+	background-color: white;
+	margin-bottom: 1rem;
+}
+
+.THIS .slds-form-element__legend {
+	padding-bottom: 1rem;
+}
+
+.THIS .paddingMed {
+	padding: 1.5rem;
+}
+
+.THIS .masterSelect {
+	padding-bottom: 0.5rem;
+}
+
+.THIS .caseSelect {
+	padding-bottom: 0.5rem;
+}
+
+.THIS .padLess {
+	padding: -.5rem;
+}
+
+.THIS .slds-modal__container {
+	max-width: 75%;
+	min-width: 70%;
+	height: 41rem;
+}
+
+.THIS .topLeftPadding {
+	padding-top: 1rem;
+	padding-left: 1rem;
+}
