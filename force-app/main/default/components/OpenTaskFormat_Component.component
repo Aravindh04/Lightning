@@ -1,0 +1,88 @@
+<apex:component controller="OpenTaskMailFormat_Controller"
+	access="global">
+
+	<apex:attribute name="usersId" type="String" assignTo="{!uID}"
+		description="Id of the expense report" />
+	<style>
+td {
+	height: 15.0pt
+}
+
+tr {
+	height: 15.0pt
+}
+
+.footer {
+	height: 25.0pt;
+	font-size: 13px;
+	font-face: Calibri(Body);
+}
+</style>
+	<div id="main">
+		<div id="body" style="padding-top: -2px; margin-top: 0">
+			<font face="Calibri(Body)"
+				style="font-size: 11pt; font-face: Calibri(Body);">
+				<table
+					style="border-color: #0F566D; width: 799px; font-face: Calibri(Body);"
+					border="1" rules="all" columns="6">
+
+					<tr
+						style="font-size: 80%; border-collapse: collapse; font-face: Calibri(Body);">
+						<td colspan="6">Hi <b>{!usr.Name}</b>, You have <b>{!tasks.size}</b>
+							open Tasks to be completed that are Listed below. Plese follow up
+							with the below:
+						</td>
+					</tr>
+
+					<tr
+						style="font-size: 80%; border-collapse: collapse; font-face: Calibri(Body);">
+						<th style="color: #0F566D; width: 20%; height: 15.0pt"><b>Task
+								Name </b></th>
+						<th style="color: #0F566D; width: 10%; height: 15.0pt"><b>Category
+						</b></th>
+						<th style="color: #0F566D; width: 10%; height: 15.0pt"><b>Task
+								type </b></th>
+						<th style="color: #0F566D; width: 10%; height: 15.0pt"><b>Status
+						</b></th>
+						<th style="color: #0F566D; width: 10%; height: 15.0pt"><b>Deadline
+						</b></th>
+						<th style="color: #0F566D; width: 40%; height: 15.0pt"><b>Additional
+								Comments</b></th>
+					</tr>
+
+					<apex:repeat value="{!tasks}" var="Task">
+						<tr
+							style="font-size: 80%; border-collapse: collapse; font-face: Calibri(Body);">
+							<td class="withborder" style="width: 20%;" data-label="Task Name"><a
+								href="{!'https://aravindhapps-dev-ed.my.salesforce.com/'+Task.Id}"><apex:outputField value="{!Task.Name}" /></a></td>
+							<td class="withborder" style="width: 10%;" data-label="Category"><apex:outputField value="{!Task.Category__c}" /></td>
+							<td class="withborder" style="width: 10%;" data-label="Task type"><apex:outputField value="{!Task.Type__c}" /></td>
+							<td class="withborder" style="width: 10%;" data-label="Status"><apex:outputField value="{!Task.Status__c}" /></td>
+							<td class="withborder" style="width: 10%;" data-label="Deadline"><apex:outputField value="{!Task.Deadline__c}" /></td>
+							<td class="withborder" style="width: 40%;"
+								data-label="Additional Comments"><apex:outputField value="{!Task.Additional_Comments__c}" /></td>
+						</tr>
+					</apex:repeat>
+					<tr>
+						<td class="footer" colspan="6">
+							<p>
+								Please change the status of the Task if completed or complete
+								before Deadline date and update. If not possible please tell the
+								admin to re-assign to other user. <br /> To Login to the
+								Application <a
+									href="https://aravindhapps-dev-ed.lightning.force.com/lightning/o/Task__c/list">click
+									here</a>
+							</p>
+						</td>
+					</tr>
+
+				</table> <br /> <br />
+				<p>
+					Regards, <br /> BGP residence<br /> bgpresidence@home.com
+				</p>
+
+
+			</font>
+		</div>
+	</div>
+</apex:component>
