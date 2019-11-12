@@ -26,8 +26,8 @@ job-definition: &jobdef
             command: |
                 openssl aes-256-cbc -k $SFDC_SERVER_KEY -in assets/server.key.enc -out assets/server.key -d
                 node_modules/sfdx-cli/bin/run force:auth:jwt:grant --clientid $SFDC_PROD_CLIENTID --jwtkeyfile assets/server.key --username $SFDC_PROD_USER --setdefaultdevhubusername -a DevHub
-                echo "Creating scratch org with definition config/project-scratch-def.json"
-                node_modules/sfdx-cli/bin/run force:org:create -v DevHub -s -f "config/project-scratch-def.json" -a scratch
+                echo "Creating scratch org with definition $SCRATCH_DEF"
+                node_modules/sfdx-cli/bin/run force:org:create -v DevHub -s -f "config/$SCRATCH_DEF" -a scratch
         - run:
             name: Remove Server Key
             when: always
