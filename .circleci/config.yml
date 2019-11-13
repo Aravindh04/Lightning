@@ -24,8 +24,8 @@ job-definition: &jobdef
         - run: 
             name: Create Scratch Org
             command: |
-                openssl aes-256-cbc -k $SFDC_SERVER_KEY -in assets/server.key.enc -out assets/server.key -d
-                node_modules/sfdx-cli/bin/run force:auth:jwt:grant --clientid $SFDC_PROD_CLIENTID --jwtkeyfile assets/server.key --username $SFDC_PROD_USER --setdefaultdevhubusername -a DevHub
+                openssl aes-256-cbc -k $KEY -in assets/server.key.enc -out assets/server.key -d
+                node_modules/sfdx-cli/bin/run force:auth:jwt:grant --clientid $CONSUMERKEY --jwtkeyfile assets/server.key --username $USERNAME --setdefaultdevhubusername -a DevHub
                 echo "Creating scratch org with definition $SCRATCH_DEF"
                 node_modules/sfdx-cli/bin/run force:org:create -v DevHub -s -f "config/$SCRATCH_DEF" -a scratch
         - run:
@@ -68,23 +68,23 @@ jobs:
       - checkout
       - restore_cache:
           keys: 
-            - pmd-v6.19.0
+            - pmd-v6.0.1
       - run:
           name: Install PMD
           command: |
-              if [ ! -d pmd-bin-6.19.0 ]; then
-                  curl -L "https://github.com/pmd/pmd/releases/download/pmd_releases/6.19.0/pmd-bin-6.19.0.zip" -o pmd-bin-6.19.0.zip
-                  unzip pmd-bin-6.19.0.zip
-                  rm pmd-bin-6.19.0.zip
+              if [ ! -d pmd-bin-6.0.1 ]; then
+                  curl -L "https://github.com/pmd/pmd/releases/download/pmd_releases/6.0.1/pmd-bin-6.0.1.zip" -o pmd-bin-6.0.1.zip
+                  unzip pmd-bin-6.0.1.zip
+                  rm pmd-bin-6.0.1.zip
               fi
       - save_cache:
-          key: pmd-v6.19.0
+          key: pmd-v6.0.1
           paths: 
-              - pmd-bin-6.19.0
+              - pmd-bin-6.0.1
       - run: 
           name: Run Static Analysis
           command: |
-              pmd-bin-6.19.0/bin/run.sh pmd -d . -R $RULESET -f text -l apex -r static-analysis.txt 
+              pmd-bin-6.0.1/bin/run.sh pmd -d . -R $RULESET -f text -l apex -r static-analysis.txt 
       - store_artifacts:
           path: static-analysis.txt
   build-enterprise:
@@ -92,7 +92,7 @@ jobs:
      environment:
         SCRATCH_DEF: project-scratch-def.json
   build-developer: 
-     <<: *jobdefÍ
+     <<: *jobdef
      environment:
         SCRATCH_DEF: developer.json
 workflows:
