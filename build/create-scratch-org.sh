@@ -11,109 +11,28 @@ sfdx force:auth:jwt:grant --clientid $SFDC_PROD_CLIENTID --jwtkeyfile keys/serve
 echo "Creating the Scratch Org..."
 sfdx force:org:create -f config/project-scratch-def.json -a ${CIRCLE_BRANCH} -s
 
-
-
-job-definition: &jobdef
-    docker:
-        - image: circleci/node:latest
-    steps:
-        - checkout
-        - restore_cache:
-            keys:
-                - sfdx-6.8.2-local
-        - run:
-            name: Install Salesforce DX
-            command: |
-                if [ ! -d node_modules/sfdx-cli ]; then
-                    export SFDX_AUTOUPDATE_DISABLE=true
-                    export SFDX_USE_GENERIC_UNIX_KEYCHAIN=true
-                    export SFDX_DOMAIN_RETRY=300
-                    npm install sfdx-cli@6.8.2
-                    node_modules/sfdx-cli/bin/run --version
-                    node_modules/sfdx-cli/bin/run plugins --core
-                fi
-        - save_cache:
-            key: sfdx-6.8.2-local
-            paths: 
-                - node_modules
-        - run: 
-            name: Create Scratch Org
-            command: |
-                openssl aes-256-cbc -k $SFDC_SERVER_KEY -in assets/server.key.enc -out assets/server.key -d
-                node_modules/sfdx-cli/bin/run force:auth:jwt:grant --clientid $SFDC_PROD_CLIENTID --jwtkeyfile assets/server.key --username $SFDC_PROD_USER --setdefaultdevhubusername -a DevHub
-                echo "Creating scratch org with definition $SCRATCH_DEF"
-                node_modules/sfdx-cli/bin/run force:org:create -v DevHub -s -f "config/$SCRATCH_DEF" -a scratch
-        - run:
-            name: Remove Server Key
-            when: always
-            command: |
-                rm assets/server.key
-        - run: 
-            name: Push Source
-            command: |
-                node_modules/sfdx-cli/bin/run force:source:push -u scratch
-        - run:
-            name: Run Apex Tests
-            command: |
-                mkdir ~/tests
-                mkdir ~/tests/apex
-                node_modules/sfdx-cli/bin/run force:apex:test:run -u scratch -c -r human -d ~/tests/apex -w 9999
-        - run: 
-            name: Push to Codecov.io (Optional Step)
-            command: |
-                cp ~/tests/apex/test-result-codecoverage.json .
-                bash <(curl -s https://codecov.io/bash)
-        - run: 
-            name: Clean Up
-            when: always
-            command: |
-                node_modules/sfdx-cli/bin/run force:org:delete -u scratch -p
-                rm ~/tests/apex/*.txt ~/tests/apex/test-result-7*.json
-        - store_artifacts:
-            path: ~/tests
-        - store_test_results:
-            path: ~/tests
-
-version: 2
-jobs:
-  static-analysis:
-    docker:
-      - image: circleci/openjdk:latest
-    steps:
-      - checkout
-      - restore_cache:
-          keys: 
-            - pmd-v6.19.0
-      - run:
-          name: Install PMD
-          command: |
-              if [ ! -d pmd-bin-6.19.0 ]; then
-                  curl -L "https://github.com/pmd/pmd/releases/download/pmd_releases/6.19.0/pmd-bin-6.19.0.zip" -o pmd-bin-6.19.0.zip
-                  unzip pmd-bin-6.19.0.zip
-                  rm pmd-bin-6.19.0.zip
-              fi
-      - save_cache:
-          key: pmd-v6.19.0
-          paths: 
-              - pmd-bin-6.19.0
-      - run: 
-          name: Run Static Analysis
-          command: |
-              pmd-bin-6.19.0/bin/run.sh pmd -d . -R $RULESET -f text -l apex -r static-analysis.txt 
-      - store_artifacts:
-          path: static-analysis.txt
-  build-enterprise:
-     <<: *jobdef
-     environment:
-        SCRATCH_DEF: project-scratch-def.json
-  build-developer: 
-     <<: *jobdefÍ
-     environment:
-        SCRATCH_DEF: developer.json
-workflows:
-  version: 2
-  test_and_static:
-    jobs:
-      - build-enterprise
-      - build-developer
-      - static-analysis
+bGWZtlxYEgFYecybJMU3asaJXckv71CjYCVxG2V/3XhG5tzVxkT+bX7WQNy342w/
+3ww62uy4K1+S/8vwywwZbmfi/9FjKfNUo0SvQAEHQV1cz6IVU/KtwIZdlZQcQIdC
+ihXky6MaaDZ/+DWHEwRsnGE55H3BOW1agYAIfetr5GEG1T30Vnydo0o1hL8MVitx
+xcYoqdz3ludaNVmBqCUTiWOBhQRIN3YmHgQtTqJ8/yuClnm9+5l+n5tFPRsw4f0K
+vgor3/1rK1b722p2wSw6j3Oc6B972uWQ3/6f/FipZZsC5JiQ1Ixhler9BWwITYRC
+XhcfQAkddcIPYJYbhLBu8f9bs2y1JXdPY/K/SglQuFKd2t8fEo5n/l0HO9xDZ/ou
+8ulFKe7mvr/glBO29rThyqw3FF5VtSFNrBRuUZ1v4KvOljqh6FqKB5v/nbe7A3pv
++Hjy3IUujWNEIBtgUadzvPsriTr0SafS3Ll4WM7urtJp13Zw60oeQb/9yqpV/r6K
++ZJM9HouSYN47MQHhtSbhfdsXVD3J9TozWAVtlNi+D3WrREr7BZZ/oterIF2VWJ7
+XeWQDvmY2fRTPPf1MRa50gh7Rx5qHEf3+xvv7TeQh3YBXN6qMYceL8Xs+GIePcqD
+PqXjlC6aENdAaCyTEkT9wx/2X+AGvZ4rSsIVycwYtO9WUU1fHW74ZRSDiH6o2tlR
+DU5ZRcXtFHYflHX3zXZ/DOglDCWlwyRhGfzIQc8PKPHa/Aap0rQIfoebV73JIC/Y
+NkcByJJyzcKK/0gLffB08CGm+R6vxon8ep4/dIDQReRV0EGVaQn5CvBHoHc1Eai4
+/uwHzLgCOI9lK0EWolhl3yatkchFXZKwBQGlnxxOSzjyHoU+9bWmcFMdstRGrh9Y
+s+8Ot+UyhD9f0oT2Q3ZdS9617obvX1ZtAtLSOydzu0ZeaTF3U3V5LKxvcbV28Hmp
+8o9m8tdwI95m9/ehEIvnp9NfAIU6r8DvjCgzu4ZEF+nOzDaO9ZUdbfeWgfR7Qv8t
+pBQ58NWQ16kqCIG2TQktfI1YwNO0w9KbavARn5z/J2lKh6P4qzTiLKe3GLd4zOcw
+R6I35Ev5+0DmeTkyQuXUtSuwXVD4RrAgTLqmCzhOf6Z/9lOV9faT9hfR0/c/UTy+
+l2TXuYrh6VCnOFU25NyLcK8wZ9eJeCaS2239anTEjPXqAuhLD6Zi07725VQbB21A
+EVsJBoO3/ifuIhFFIkR6CZCQaSEuuu6Elxzw6B6eWd8tydEp41mzMdB16GjIUz2t
+XqpujMhv11CfXofhDOW18B7apfCALGffzfGNCiSr8pH7g6vL4ko0Z58LPZ+bPVSq
++8FAKEcSoTF3hUz56uDbU2xEe/3hs+5XmsM/5a37HFymmksROEe5IKb2HAIyXc7I
+sAsYAtBFWdyrcNk5j4JoJBny0JvX4KqY2QBb4E20eWIlDrO4x7OkyMn92fcYh7O2
+CRNUzSaLmIXWsfLiarej5GsqY/QI89YGmqDotpr4n2/rX0FclCmaIeM8suWCKyaj
+VdzLLJZ3rcFN0gYX1ZJ72PVZZIBZRBV761a1Zt2sNih+oiVnqwNiv5/I/4OMnTPo
